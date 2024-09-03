@@ -10,8 +10,9 @@ A locally hosted online shopping application built for Intro to Software Enginee
 - Matthew Crosno  <br>
 <br>
 
-# Programming Languages Used:<br>
+# Techniques and Languages Used:<br>
 - HTML <br>
 - CSS <br>
 - MySQL <br>
 - Python <br>
+- Agile Development <br>
