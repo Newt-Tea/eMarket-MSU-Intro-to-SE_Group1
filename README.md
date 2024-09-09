@@ -8,9 +8,20 @@ A locally hosted online shopping application built for Intro to Software Enginee
 - Jeremiah Ickom | ji256 | Database Integration<br>
 - Andrea Ambrose | aambrose1 | Flex Role<br>
 - Matthew Crosno | LostSpaghetti | Back-End <br>
-<br>
 
-#Features
+
+# Features
+- Account Management 
+    - Allow users to login/out with a username/email and a password
+    - Allow creation of user accounts
+    - Show information such as account balance, and listed orders
+- Various Functional Buttons to navigate the site
+- Seach and Filtration 
+- Display of products in distinct subpages
+- Shopping cart allowing additions and deletions to and from itself 
+- Simulated purchasing experience
+- Ability to process returns 
+
 
 # Techniques and Languages Used:<br>
 - HTML <br>
