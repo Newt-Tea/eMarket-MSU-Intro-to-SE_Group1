@@ -1,0 +1,55 @@
+Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,Source Arrow,Destination Arrow,Status,Text Area 1,Text Area 2,Text Area 3,Comments
+1,Document,,,,,,,,,Draft,Class Overview Diagram,,,
+2,Page,,,,,,,,,,Page 1,,,
+3,Class,UML,2,,,,,,,,ShoppingCart,​- cart [order],"​+isEmpty : boolean
++addItem(item: Product): void
++removeItem(item: Product): void
++viewItems(): Product[]
++calculateSubtotal() : double
++initiatePurchase(paymentDetails): void",
+4,Class,UML,2,,,,,,,,Product,"​+id: string
++name: string
++price: double
++stock: int","addProduct(id,name,price,stock)
+removeProduct(id,name,price,stock)",
+5,Class,UML,2,,,,,,,,Payment,,"​+processPayment(amount: double): void
++validatePaymentInfo(info: any): boolean
++ sendStatus (order:order, status:string)
++ modifyBalence(user:user ,amount:float)",
+6,Class,UML,2,,,,,,,,Order,"​+id: string
++status: string
++orderItems: list",​+updateStatus(status: string): void,
+7,Class,UML,2,,,,,,,,User,"​+userID: int
++username: string
++password: string
++email: string
++ accountBalence","​+login(username: string, password: string): boolean
++logout(): void",
+8,Text,Standard,2,,,,,,,,,,,
+9,Class,UML,2,,,,,,,,Seller,,"​+addProduct(productDetails: Map): void
++removeProduct(productID: string): void
++receivePayment(amount: float): void",
+10,Class,UML,2,,,,,,,,Admin,,"​+manageUsers(userList: List): void
++manageInventory(productList: List): void
++generateReports(reportType: string): void",
+11,Class,UML,2,,,,,,,,Customer,"​+approved: boolean
+","​+viewProducts(): List
++addToCart(productID: string): void
++checkout(paymentDetails: Map): void",
+12,Class,UML,2,,,,,,,,Browse,​+productList: list[product],"​+ search(self,string) : list
++ sort(self,price, rating)",
+13,Class,UML,2,,,,,,,,Display,productList:list[product],display(type),
+14,Line,,2,,,6,3,None,Arrow,,Composition,,,
+15,Line,,2,,,7,11,Arrow,None,,Inherits,,,
+16,Line,,2,,,9,7,None,Arrow,,Inherits,,,
+17,Line,,2,,,10,7,None,Arrow,,Inherits,,,
+18,Line,,2,,,11,3,None,Arrow,,Use,,,
+19,Line,,2,,,4,12,Arrow,None,,Use,,,
+20,Line,,2,,,3,5,Arrow,None,,Use,,,
+21,Line,,2,,,4,3,Arrow,None,,Use,,,
+22,Line,,2,,,4,9,None,Arrow,,Use,,,
+23,Line,,2,,,4,13,Arrow,None,,Use,,,
+24,Line,,2,,,6,13,Arrow,None,,Use,,,
+25,Line,,2,,,3,13,Arrow,None,,Use,,,
+26,Line,,2,,,4,10,None,Arrow,,Dependancy,,,
+27,Line,,2,,,5,6,None,Arrow,,Use,,,
