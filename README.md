@@ -6,7 +6,7 @@ A locally hosted online shopping application built for Intro to Software Enginee
 # Created By:
 - Hudson Hargrove | Newt Tea | Front-End<br>
 - Jeremiah Ickom | ji256 | Database Integration<br>
-- Andrea Ambrose | aambrose1 | Flex Role<br>
+- Andrea Ambrose | aambrose1 | Back-End <br>
 - Matthew Crosno | LostSpaghetti | Back-End <br>
 
 
