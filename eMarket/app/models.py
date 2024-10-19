@@ -13,7 +13,8 @@ class User(AbstractUser):
     ]
 
 # i will change this functionality, just gotta think about this *strokes chin*
-    user_types = models.CharField(max_length=20, choices=user_types)
+    #user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user_type = models.CharField(max_length=6, choices=user_types)
     class Admin:
         def is_admin(self):
             return self.user_type == models.CharField(choice = 'admin')
