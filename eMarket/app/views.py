@@ -33,19 +33,15 @@ def login_view(request):
 
   return render(request, 'app/login.html')
 
-def logout_view(request):
-  return render(request, 'app/logout.html')
 # Main Registration Page
-from django.contrib.auth.models import User
 from .forms import RegistrationForm
-from .models import User
 
 def register(request):
   if request.method == 'POST':
     form = RegistrationForm(request.POST)
     if form.is_valid():
       user = form.save()
-      # Create the User and associate it with the user
+      # Create the UserProfile and associate it with the user
       user_profile = User.objects.create(
         user=user,
         user_type=form.cleaned_data.get('user_type')

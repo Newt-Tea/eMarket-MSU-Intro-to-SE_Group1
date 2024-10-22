@@ -6,20 +6,6 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
 
-    # Add related_name to groups and user_permissions to conflict with AbstractUser
-    groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='customer_user_set',  # Change related_name to avoid conflicts
-        blank=True,
-        help_text='The groups this customer belongs to.'
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='customer_user_permissions_set',  # Change related_name to avoid conflicts
-        blank=True,
-        help_text='Specific permissions for this customer.'
-    )
-    
     #accountBalance = models.IntegerField() # Possibly unneeded, as we will not need to have an account balance
     userID = -1 # User ID is non-functional until we can reference the length of the user database
     """"
