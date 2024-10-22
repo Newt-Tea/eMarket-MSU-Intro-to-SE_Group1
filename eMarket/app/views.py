@@ -34,9 +34,7 @@ def login_view(request):
   return render(request, 'app/login.html')
 
 # Main Registration Page
-from django.contrib.auth.models import User
 from .forms import RegistrationForm
-from .models import UserProfile
 
 def register(request):
   if request.method == 'POST':
@@ -44,7 +42,7 @@ def register(request):
     if form.is_valid():
       user = form.save()
       # Create the UserProfile and associate it with the user
-      user_profile = UserProfile.objects.create(
+      user_profile = User.objects.create(
         user=user,
         user_type=form.cleaned_data.get('user_type')
       )
