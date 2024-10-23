@@ -9,6 +9,7 @@
   <h2>Login</h2>
   <form method="POST">
     {% csrf_token %}
+    {{ form }}
     <label for="username">Username:</label>
     <input type="text" name="username" required><br>
     <label for="password">Password:</label>
