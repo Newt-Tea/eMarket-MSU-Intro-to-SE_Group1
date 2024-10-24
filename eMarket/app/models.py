@@ -1,37 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
-# holders for now since these models will be redefined after 
-# the databases are complete & migrated. just placeholders RN ** do Not make migrations yet**
 
 class User(AbstractUser):
 
     #accountBalance = models.IntegerField() # Possibly unneeded, as we will not need to have an account balance
     userID = -1 # User ID is non-functional until we can reference the length of the user database
-    """"
-    user_types = [
-        'admin',
-        'buyer',
-        'seller',
-    ]
-    user_type = models.CharField(max_length=20, choices=user_types)
-    """
+    user_type = models.CharField(max_length=9, default = 'buyer')
+    
 
-# i will change this functionality, just gotta think about this *strokes chin*
 class Admin(User):
     user_type = 'admin'
     def is_admin(self):
-        return self.user_type == models.CharField(choice = 'admin')
+        return self.user_type == models.CharField(max_length=9,choice = 'admin')
 
 class Buyer(User):
     user_type = 'buyer'
     def is_buyer(self):
-        return self.user_type == models.CharField(choice = 'buyer')
+        return self.user_type == models.CharField(max_length=9,choice = 'buyer')
 
 class Seller(User):
     user_type = 'seller'
     def is_seller(self):
-        return self.user_type == models.CharField(choice = 'seller')
+        return self.user_type == models.CharField(max_length=9,choice = 'seller')
     
 
 class Product(models.Model):
