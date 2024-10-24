@@ -19,7 +19,8 @@ def login_view(request):
 
     if user is not None:
       login(request, user)
-      user_profile = User.objects.get(user=user)
+      user_type = request.user.role
+      user_profile = User.objects.get(user_type) # experiencing an error here
       
       # Redirect based on user type
       if user_profile.user_type == 'admin':
@@ -34,26 +35,26 @@ def login_view(request):
   return render(request, 'app/login.html')
 
 # Main Registration Page
-from django.contrib.auth.models import User
 from .forms import RegistrationForm
-from .models import UserProfile
 
 def register(request):
   if request.method == 'POST':
     form = RegistrationForm(request.POST)
     if form.is_valid():
       user = form.save()
+      user.save()
+      # I think there is an error here where the user object is being created twice, so I commented this out
       # Create the UserProfile and associate it with the user
-      user_profile = UserProfile.objects.create(
-        user=user,
-        user_type=form.cleaned_data.get('user_type')
-      )
+      # user_profile = User.objects.create( 
+      #   user = user
+      #   user_type=form.cleaned_data.get('role')
+      # )
       return redirect('registration_success')  # Redirect to success page
   else:
     form = RegistrationForm()
   
-  return render(request, 'your_app/register.html', {'form': form})
+  return render(request, 'app/register.html', {'form': form})
 
 # Holding Page pending account approval
 def registration_success(request):
-    return render(request, 'your_app/registration_success.html')
+    return render(request, 'app/registration_success.html')
