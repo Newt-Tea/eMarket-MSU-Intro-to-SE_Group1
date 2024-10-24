@@ -26,9 +26,8 @@ A locally hosted online shopping application built for Intro to Software Enginee
 # Techniques and Languages Used:<br>
 - HTML <br>
 - CSS <br>
-- MySQL <br>
-- Python <br>
-- Python Django <br>
+- SQLite <br>
+- Django Python <br>
 - Agile Development <br>
 
 
