@@ -16,6 +16,10 @@
     <button type="submit">Login</button>
   </form>
 
+  <p>
+    <a href="{% url 'register' %}">Create an account</a>
+  </p>
+
   {% if error %}
     <p style="color:red;">{{ error }}</p>
   {% endif %}
