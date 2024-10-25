@@ -1,5 +1,7 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import User,Product,Cart,Order
+django.urls import reverse
+from django.contrib.auth import get_user_model
 
 # Create your tests here.
 class testUser(TestCase):
@@ -61,3 +63,42 @@ class testProduct(TestCase):
         print("Product found.")
         self.assertEqual(phone.price,10)
         print("Product price matches.")
+        
+#  Test cases for views.py
+class testView(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username='testuser', password='password')
+
+    def test_product_list_view(self):
+        response = self.client.get(reverse('product_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'your_app/product_list.html')
+
+    def test_login_view_get(self):
+        response = self.client.get(reverse('login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/login.html')
+
+    def test_login_view_post_valid(self):
+        self.client.login(username='testuser', password='password')
+        response = self.client.post(reverse('login'), {'username': 'testuser', 'password': 'password'})
+        self.assertEqual(response.status_code, 302)  # Redirect status code
+
+    def test_register_view_get(self):
+        response = self.client.get(reverse('register'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/register.html')
+
+    def test_register_view_post_valid(self):
+        response = self.client.post(reverse('register'), {
+            'username': 'newuser',
+            'password1': 'password',
+            'password2': 'password',
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect status code
+
+    def test_registration_success_view(self):
+        response = self.client.get(reverse('registration_success'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/registration_success.html')
