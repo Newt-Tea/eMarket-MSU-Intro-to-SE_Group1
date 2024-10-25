@@ -24,7 +24,6 @@ This project is a self-hosted e-commerce website built with Django, Python, and 
 - **Merge**: Once approved, the PR can be merged by the reviewer.
 
 ## Code Style and Best Practices
-- **Coding Standards**: Follow PEP 8 for Python code.
 - **Testing**: Ensure that all new features and bug fixes are covered by tests.
 - **Documentation**: Update or add documentation for any changes or new features.
 
@@ -32,8 +31,6 @@ This project is a self-hosted e-commerce website built with Django, Python, and 
 - Use the project's issue tracker to discuss bugs, features, and improvements.
 - Regularly update your progress and collaborate with other group members.
 
-## Security
-- Report any security vulnerabilities to the project maintainers directly and confidentially.
 
 ## License
 By contributing, you agree that your contributions will be licensed under the same license as the project.
