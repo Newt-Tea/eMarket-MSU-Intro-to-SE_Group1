@@ -17,11 +17,12 @@ CREATE TABLE IF NOT EXISTS "User" (
 	"UserId"	INTEGER NOT NULL,
 	"Username"	varchar(10) NOT NULL UNIQUE,
 	"Password"	varchar(10) NOT NULL UNIQUE,
-	"Email"	varchar(45) NOT NULL,
+	"Email"	varchar(45) NOT NULL UNIQUE,
 	"AccountBalance"	FLOAT (10,2),
 	PRIMARY KEY("UserId")
 );
-INSERT INTO "Product" ("ProductID","ProductName","Price","Stock") VALUES (1544,'GI Joe Action Figure',26.1,9),
+INSERT INTO "Product" ("ProductID","ProductName","Price","Stock") VALUES 
+ (1544,'GI Joe Action Figure',26.1,9),
  (2662,'Lego Set',87.26,4),
  (3215,'Chips',2.69,20),
  (5986,'Bottled Water',1.17,45),
