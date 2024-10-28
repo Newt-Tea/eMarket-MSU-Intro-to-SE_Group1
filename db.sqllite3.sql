@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS "Product" (
 CREATE TABLE IF NOT EXISTS "User" (
 	"id"	INTEGER NOT NULL,
 	"Username"	varchar(10) NOT NULL UNIQUE,
-	"Password"	varchar(10) NOT NULL UNIQUE,
+	"Password"	varchar(10) NOT NULL,
 	PRIMARY KEY("id")
 );
 INSERT INTO "Product" ("ProductID","ProductName","Price","Stock") VALUES 
