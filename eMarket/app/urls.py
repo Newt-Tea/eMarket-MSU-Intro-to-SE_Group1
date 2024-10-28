@@ -8,4 +8,5 @@ urlpatterns = [
   path('register/', views.register, name='register'),
   path('registration_success/', views.registration_success, name='registration_success'),
   #path('logout/', views.logout_view, name='logout'),
+  path('add_product/', views.add_product, name='add_product'),
 ]
