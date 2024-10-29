@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from .models import Product, Cart, Order
+from django.shortcuts import render, redirect
+from .models import Product, Cart, Order, User
 
 #Main Product page
 def product_list(request):
@@ -79,3 +79,25 @@ def add_product(request):
     form = ProductCreationForm()
   
   return render(request, 'app/add_product.html', {'form': form})
+
+# Shopping Cart Page
+def shopping_cart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    return render(request, 'app/shopping_cart.html', {'cart_items': cart_items})
+
+# Payment Confirmed Page Possibly unnecessary
+def payment_confirmed(request):
+    # Logic for confirming payment
+    return redirect('order_history')
+
+# Order History Page
+def order_history(request):
+    orders = Order.objects.filter(user=request.user)
+    return render(request, 'app/order_history.html', {'orders': orders})
+
+# Logout View
+from django.contrib.auth import logout
+
+def logout_view(request):
+    logout(request)
+    return redirect('')
