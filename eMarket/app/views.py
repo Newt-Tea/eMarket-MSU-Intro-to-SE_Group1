@@ -4,12 +4,17 @@ from .models import Product, Cart, Order, User
 #Main Product page
 def product_list(request):
     products = Product.objects.all()  # Fetch all products from the database
-    return render(request, 'your_app/product_list.html', {'products': products})
+    return render(request, 'app/product_list.html', {'products': products})
+  
+#Product Detail Page
+def product_detail(request, product_id):
+    product = Product.objects.get(id=product_id)
+    return render(request, 'app/product_detail.html', {'product': product})
+  
+#Add to Cart
 
 #Main Login Page
 from django.contrib.auth import authenticate, login
-from django.shortcuts import redirect
-from .models import User 
 
 def login_view(request):
   if request.method == 'POST':
@@ -19,9 +24,7 @@ def login_view(request):
 
     if user is not None:
       login(request, user)
-      user_type = request.user.role
-      user_profile = User.objects.get(user_type) # experiencing an error here
-      
+      user_profile = User.objects.get(username=user.username)
       # Redirect based on user type
       if user_profile.user_type == 'admin':
         return redirect('admin_dashboard')
@@ -55,6 +58,15 @@ def register(request):
   
   return render(request, 'app/register.html', {'form': form})
 
+from django.contrib.auth.decorators import login_required
+@login_required
+##
+## This needs to be made functional
+##
+def add_to_cart(request, product_id):
+  cart, created = Cart.objects.get_or_create(user=request.user)
+  cart.save()
+    
 # Holding Page pending account approval
 def registration_success(request):
     return render(request, 'app/registration_success.html')
