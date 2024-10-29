@@ -88,7 +88,7 @@ def shopping_cart(request):
 # Payment Confirmed Page Possibly unnecessary
 def payment_confirmed(request):
     # Logic for confirming payment
-    return redirect('order_history')
+    return render(request, 'app/payment_confirmed.html')
 
 # Order History Page
 def order_history(request):
@@ -100,4 +100,4 @@ from django.contrib.auth import logout
 
 def logout_view(request):
     logout(request)
-    return redirect('')
+    return render(request, 'app/login.html')

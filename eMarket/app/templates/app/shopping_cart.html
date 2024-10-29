@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+    <ul>
+        {% for item in cart_items %}
+            <li>{{ item.product.name }} - {{ item.quantity }} - ${{ item.product.price }}</li>
+        {% empty %}
+            <li>Your cart is empty.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'checkout' %}">Proceed to Checkout</a>
+</body>
+</html>
