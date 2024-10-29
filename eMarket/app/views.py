@@ -1,15 +1,13 @@
-from django.shortcuts import render
-from .models import Product, Cart, Order
+from django.shortcuts import render, redirect
+from .models import Product, User, Cart, Order
 
 #Main Product page
 def product_list(request):
     products = Product.objects.all()  # Fetch all products from the database
-    return render(request, 'your_app/product_list.html', {'products': products})
+    return render(request, 'app/product_list.html', {'products': products})
 
 #Main Login Page
 from django.contrib.auth import authenticate, login
-from django.shortcuts import redirect
-from .models import User 
 
 def login_view(request):
   if request.method == 'POST':
@@ -19,8 +17,7 @@ def login_view(request):
 
     if user is not None:
       login(request, user)
-      user_type = request.user.role
-      user_profile = User.objects.get(user_type) # experiencing an error here
+      user_profile = User.objects.get(username=user.username)  # Fixed error here
       
       # Redirect based on user type
       if user_profile.user_type == 'admin':
@@ -50,6 +47,8 @@ def register(request):
       #   user_type=form.cleaned_data.get('role')
       # )
       return redirect('registration_success')  # Redirect to success page
+    else:
+      print(form.errors)  # Add this line to print form errors
   else:
     form = RegistrationForm()
   
