@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Launch Django Tests",
+            "program": "${workspaceFolder}/eMarket/manage.py",
+            "args": [
+                "test"
+            ],
+            "django": true
+        },
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Launch Django App",
+            "program": "${workspaceFolder}/eMarket/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true
+        }
+    ]
+}
