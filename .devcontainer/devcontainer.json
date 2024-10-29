@@ -1,32 +1,36 @@
-
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "image": "mcr.microsoft.com/devcontainers/universal:2", // Base image for the dev container
   "hostRequirements": {
-    "cpus": 4
+    "cpus": 4 // Minimum CPU requirement
   },
-  "waitFor": "onCreateCommand",
-  "updateContentCommand": "pip install -r requirements.txt && python manage.py migrate",
-  "postCreateCommand": "cp .env.example .env",
+  "waitFor": "onCreateCommand", // Wait before running post-create commands
+  "updateContentCommand": "pip install -r requirements.txt && python manage.py migrate || echo 'Migration failed'", // Install dependencies and run migrations
+  "postCreateCommand": "cp .env.example .env || echo '.env file copy failed'", // Copy environment variables file
   "postAttachCommand": {
-    "server": "python manage.py runserver"
+    "server": "python manage.py runserver" // Command to start the server
   },
   "customizations": {
     "codespaces": {
       "openFiles": [
-        "hello_world/templates/index.html"
+        "hello_world/templates/index.html" // Open this file on start
       ]
     },
     "vscode": {
       "extensions": [
-        "ms-python.python"
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "github.copilot"// Added extensions for better development experience
       ]
     }
   },
   "portsAttributes": {
     "8000": {
       "label": "Application",
-      "onAutoForward": "openPreview"
+      "onAutoForward": "openPreview" // Automatically open preview when port is forwarded
     }
   },
-  "forwardPorts": [8000]
+  "forwardPorts": [8000], // Ports to forward
+  "runArgs": ["-e", "DJANGO_DEBUG=True"] // Environment variables
 }
