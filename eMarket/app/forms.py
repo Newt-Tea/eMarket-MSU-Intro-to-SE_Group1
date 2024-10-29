@@ -1,16 +1,18 @@
 from django import forms
+from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import User, Product
 
-user_types = [
-    ('admin','ADMIN',),
-    ('buyer', 'BUYER',),
-    ('seller', 'SELLER'),
-]
-
-#Needs a password and user type variable
-class RegistrationForm(UserCreationForm):
-    role = forms.ChoiceField(widget=forms.Select,choices=user_types)
+class RegistrationForm(UserCreationForm, ModelForm):
+    role = forms.ChoiceField(widget=forms.Select,choices=User.USER_TYPE_CHOICES)
     class Meta:
         model = User
         fields = ['role', 'username', 'password1', 'password2']
+
+class ProductCreationForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name','price']
+        labels = {
+            'name' : 'Item Name',
+            'price' : 'Price $'}

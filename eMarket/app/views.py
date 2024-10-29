@@ -58,3 +58,24 @@ def register(request):
 # Holding Page pending account approval
 def registration_success(request):
     return render(request, 'app/registration_success.html')
+
+# Product registration page
+from .forms import ProductCreationForm
+
+def add_product(request):
+  if request.method == 'POST':
+    form = ProductCreationForm(request.POST)
+    if form.is_valid():
+      user = form.save()
+      user.save()
+      # I think there is an error here where the user object is being created twice, so I commented this out
+      # Create the UserProfile and associate it with the user
+      # user_profile = User.objects.create( 
+      #   user = user
+      #   user_type=form.cleaned_data.get('role')
+      # )
+      return redirect('seller_dashboard')  # Redirect to seller_dashboard
+  else:
+    form = ProductCreationForm()
+  
+  return render(request, 'app/add_product.html', {'form': form})
