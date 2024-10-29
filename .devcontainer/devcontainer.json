@@ -23,6 +23,7 @@
         "ms-python.vscode-pylance",
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
+        "ms-python.debugpy",
         "github.copilot"// Added extensions for better development experience
       ]
     }
