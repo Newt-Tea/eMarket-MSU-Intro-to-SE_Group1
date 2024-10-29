@@ -87,11 +87,14 @@ class testView(TestCase):
 
     def test_register_view_post_valid(self):
         response = self.client.post(reverse('register'), {
+            'role': 'buyer',
             'username': 'newuser',
-            'password1': 'password',
-            'password2': 'password',
+            'password1': 'AsUperGreaTPassw0rd!',
+            'password2': 'AsUperGreaTPassw0rd!',
         })
-        self.assertEqual(response.status_code, 302)  # Redirect status code
+        # Verify that the user was created
+        user_exists = get_user_model().objects.filter(username='newuser').exists()
+        self.assertTrue(user_exists, "New user was not created.")
 
     def test_registration_success_view(self):
         response = self.client.get(reverse('registration_success'))
