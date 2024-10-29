@@ -4,24 +4,19 @@
     "cpus": 4 // Minimum CPU requirement
   },
   "waitFor": "onCreateCommand", // Wait before running post-create commands
-  "updateContentCommand": "pip install -r requirements.txt && python manage.py migrate || echo 'Migration failed'", // Install dependencies and run migrations
-  "postCreateCommand": "cp .env.example .env || echo '.env file copy failed'", // Copy environment variables file
+  "updateContentCommand": "cd eMarket && pip install -r requirements.txt && python manage.py migrate || echo 'Migration failed'", // Change directory, install dependencies and run migrations
+  "postCreateCommand": "cd eMarket && cp .env.example .env || echo '.env file copy failed'", // Change directory and copy environment variables file
   "postAttachCommand": {
-    "server": "python manage.py runserver" // Command to start the server
+    "server": "cd eMarket && python manage.py runserver" // Change directory and start the server
   },
   "customizations": {
-    "codespaces": {
-      "openFiles": [
-        "hello_world/templates/index.html" // Open this file on start
-      ]
-    },
     "vscode": {
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
-        "github.copilot"// Added extensions for better development experience
+        "github.copilot" // Added extensions for better development experience
       ]
     }
   },
