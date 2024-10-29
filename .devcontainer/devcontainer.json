@@ -4,6 +4,7 @@
     "cpus": 4 // Minimum CPU requirement
   },
   "waitFor": "onCreateCommand", // Wait before running post-create commands
+  // cd into the project directory
   "updateContentCommand": "pip install -r requirements.txt && python manage.py migrate || echo 'Migration failed'", // Install dependencies and run migrations
   "postCreateCommand": "cp .env.example .env || echo '.env file copy failed'", // Copy environment variables file
   "postAttachCommand": {
@@ -16,6 +17,7 @@
       ]
     },
     "vscode": {
+      "workspaceFolder": "/eMarket", // Workspace folder
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
