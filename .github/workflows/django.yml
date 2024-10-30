@@ -3,8 +3,7 @@ name: Django CI
 on:
   push:
     branches: [ "**" ]
-  pull_request:
-    branches: [ "Production" ]
+
 
 jobs:
   build:
