@@ -36,7 +36,7 @@ A locally hosted online shopping application built for Intro to Software Enginee
    ```
 2. Navigate to the project directory:
     ```sh
-    cd eMarket-MSU-Intro-to-SE_Group1
+    cd eMarket-MSU-Intro-to-SE_Group1/eMarket
     ```
 3. Install the required dependencies:
    ```sh
