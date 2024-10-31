@@ -5,27 +5,5 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product List</title>
 </head>
+<body>This is where products will be listed.</body>
 </html>
-<body>
-  <header>
-    <nav>
-      <ul>
-        <li><a href="{% url 'shopping_cart' %}">Shopping Cart</a></li>
-        <li><a href="{% url 'logout' %}">Logout</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main>
-    <h1>Product List</h1>
-    <ul>
-      {% for product in products %}
-        <li>
-          <h2>{{ product.name }}</h2>
-          <p>{{ product.description }}</p>
-          <p>Price: ${{ product.price }}</p>
-          <a href="{% url 'product_detail' product.id %}">View Details</a>
-        </li>
-      {% endfor %}
-    </ul>
-  </main>
-</body>
