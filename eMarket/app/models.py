@@ -20,7 +20,6 @@ class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'buyer'})
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    checked_out = models.BooleanField(default=False)
     def get_total(self):
         return self.quantity * self.product.price
     

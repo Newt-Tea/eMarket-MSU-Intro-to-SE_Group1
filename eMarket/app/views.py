@@ -75,13 +75,13 @@ def shopping_cart(request):
 # Add an item to user's cart
 def add_to_cart(request, product_id):
   product = Product.objects.get(id=product_id)
-  cart_item, cart_created = Cart.objects.get_or_create(user=request.user, product=product)
+  cart_item, cart_created = Cart.objects.get_or_create(user=request.user, product=product, quantity=1)
   cart_item.save()
   return redirect('shopping_cart')
 
 # Remove an item from user's cart
 def remove_from_cart(request, product_id):
-  cart = Cart.objects.get(user=request.user, checked_out = False)
+  cart = Cart.objects.get(user=request.user)
   cart_item = Order.objects.get(product_id=product_id, cart = cart)  
   if not cart_item:
     return HttpResponse("Item not found", status = 404)
@@ -89,11 +89,10 @@ def remove_from_cart(request, product_id):
   return redirect('shopping_cart')
     
 def cart_checkout(request):
-  cart = Cart.objects.get(user=request.user, checked_out = False)
+  cart = Cart.objects.get(user=request.user)
   total = sum(cart.product.price * cart.quantity for cart_item in cart.objects.all())
   order = Order.objects.create(user = request.user, total = total)
   order.save()
-  cart.checked_out = True
   order.status = 'Confirmed'
   cart.save()
   return redirect('payment_confirmation')
