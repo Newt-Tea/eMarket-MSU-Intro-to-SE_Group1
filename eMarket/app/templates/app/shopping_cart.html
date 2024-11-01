@@ -7,12 +7,15 @@
 <body>
     <h1>Shopping Cart</h1>
     <ul>
-        {% for item in cart %}
-            <li>{{ item.product.name }} - {{ item.quantity }} - ${{ item.product.price }}</li>
+        {% for item in cart_items %}
+            <li>{{ item.product.name }} - {{ item.quantity }} - ${{ item.get_total }}</li>
         {% empty %}
             <li>Your cart is empty.</li>
         {% endfor %}
     </ul>
+    <p>Total: ${{ total }} </p>
     <a href="{% url 'checkout' %}">Proceed to Checkout</a>
+    <br>
+    <a href="{% url 'product_list' %}">Or continue shopping</a>
 </body>
 </html>

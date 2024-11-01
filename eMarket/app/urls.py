@@ -12,7 +12,8 @@ urlpatterns = [
     path('add_to_cart/<product_id>', views.add_to_cart, name = 'add_to_cart'),
     path('remove_from_cart/<product_id>', views.remove_from_cart, name = 'remove_from_cart'),
     path('checkout/', views.checkout, name = 'checkout'),
-    path('cart_checkout', views.cart_checkout, name ='cart_checkout'),
+    path('cart_checkout/', views.cart_checkout, name ='cart_checkout'),
+    path('payment_confirmation/', views.payment_confirmed, name='payment_confirmation'),
     path('order_history/', views.order_history, name='order_history'),
     path('logout/', views.logout_view, name='logout'),
     

@@ -70,12 +70,16 @@ from django.contrib.auth.decorators import login_required
 # Shopping Cart Page
 def shopping_cart(request):
   cart_items = Cart.objects.filter(user=request.user)
-  return render(request, 'app/shopping_cart.html', {'cart_items': cart_items})
+  total = 0
+  for item in cart_items:
+    total = total + item.get_total()
+  return render(request, 'app/shopping_cart.html', {'cart_items': cart_items, 'total' : total})
 
 # Add an item to user's cart
 def add_to_cart(request, product_id):
   product = Product.objects.get(id=product_id)
-  cart_item, cart_created = Cart.objects.get_or_create(user=request.user, product=product, quantity=1)
+  cart_item, cart_created = Cart.objects.get_or_create(user=request.user, product=product)
+  cart_item.quantity += 1
   cart_item.save()
   return redirect('shopping_cart')
 
@@ -88,9 +92,14 @@ def remove_from_cart(request, product_id):
   cart_item.delete()
   return redirect('shopping_cart')
     
+# Save total and create an order    
 def cart_checkout(request):
   cart = Cart.objects.get(user=request.user)
-  total = sum(cart.product.price * cart.quantity for cart_item in cart.objects.all())
+
+  total = 0
+  for cart_item in cart:
+    total += cart_item.get_total()
+  
   order = Order.objects.create(user = request.user, total = total)
   order.save()
   order.status = 'Confirmed'
@@ -104,13 +113,15 @@ def checkout(request):
   if request.method == 'POST':
     form = PaymentForm(request.POST)
     if form.is_valid():
-      user = form.save()
-      user.save()
       return redirect('payment_confirmation')
   else:
     form = PaymentForm()
 
   return render(request, 'app/checkout.html', {'form': form})
+
+# Payment Confirmed Page 
+def payment_confirmed(request):
+  return render(request, 'app/payment_confirmed.html')
 
 ############################################
 ######### END OF CART FUNCTIONS ############
