@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from .models import Product, Cart, Order, User
 
 #Main Product page
@@ -58,15 +58,65 @@ def register(request):
   
   return render(request, 'app/register.html', {'form': form})
 
+######################################
+########### CART FUNCTIONS ###########
+######################################
+
 from django.contrib.auth.decorators import login_required
 @login_required
 ##
 ## This needs to be made functional
 ##
+# Shopping Cart Page
+def shopping_cart(request):
+  cart_items = Cart.objects.filter(user=request.user)
+  return render(request, 'app/shopping_cart.html', {'cart_items': cart_items})
+
+# Add an item to user's cart
 def add_to_cart(request, product_id):
-  cart, created = Cart.objects.get_or_create(user=request.user)
-  cart.save()
+  product = Product.objects.get(id=product_id)
+  cart_item, cart_created = Cart.objects.get_or_create(user=request.user, product=product)
+  cart_item.save()
+  return redirect('shopping_cart')
+
+# Remove an item from user's cart
+def remove_from_cart(request, product_id):
+  cart = Cart.objects.get(user=request.user, checked_out = False)
+  cart_item = Order.objects.get(product_id=product_id, cart = cart)  
+  if not cart_item:
+    return HttpResponse("Item not found", status = 404)
+  cart_item.delete()
+  return redirect('shopping_cart')
     
+def cart_checkout(request):
+  cart = Cart.objects.get(user=request.user, checked_out = False)
+  total = sum(cart.product.price * cart.quantity for cart_item in cart.objects.all())
+  order = Order.objects.create(user = request.user, total = total)
+  order.save()
+  cart.checked_out = True
+  order.status = 'Confirmed'
+  cart.save()
+  return redirect('payment_confirmation')
+
+# Payment on the Checkout page
+from .forms import PaymentForm
+
+def checkout(request):
+  if request.method == 'POST':
+    form = PaymentForm(request.POST)
+    if form.is_valid():
+      user = form.save()
+      user.save()
+      return redirect('payment_confirmation')
+  else:
+    form = PaymentForm()
+
+  return render(request, 'app/checkout.html', {'form': form})
+
+############################################
+######### END OF CART FUNCTIONS ############
+############################################
+
 # Holding Page pending account approval
 def registration_success(request):
     return render(request, 'app/registration_success.html')
@@ -91,16 +141,6 @@ def add_product(request):
     form = ProductCreationForm()
   
   return render(request, 'app/add_product.html', {'form': form})
-
-# Shopping Cart Page
-def shopping_cart(request):
-    cart_items = Cart.objects.filter(user=request.user)
-    return render(request, 'app/shopping_cart.html', {'cart_items': cart_items})
-
-# Payment Confirmed Page Possibly unnecessary
-def payment_confirmed(request):
-    # Logic for confirming payment
-    return render(request, 'app/payment_confirmed.html')
 
 # Order History Page
 def order_history(request):

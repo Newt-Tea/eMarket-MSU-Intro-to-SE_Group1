@@ -13,11 +13,20 @@ class User(AbstractUser):
 class Product(models.Model):
     name = models.CharField(max_length=50)
     price = models.DecimalField(decimal_places=2, max_digits=10)
+    # To-do: image feature 
+    # image = models.ImageField(upload_to='products/')
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'buyer'})
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-
+    quantity = models.PositiveIntegerField(default=1)
+    checked_out = models.BooleanField(default=False)
+    def get_total(self):
+        return self.quantity * self.product.price
+    
 class Order(models.Model):
-    items = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'buyer'})
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    status = models.CharField(max_length = 50, default='Pending')
