@@ -45,7 +45,9 @@ class testUser(TestCase):
         adminCount = User.objects.filter(user_type='admin').count()
         self.assertEqual(adminCount,2)
         print("Number of admins is correct.")
-        
+
+    def test_dummyVals(self):
+        pass
         
         
         
