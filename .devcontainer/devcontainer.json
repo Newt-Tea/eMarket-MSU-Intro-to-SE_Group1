@@ -11,12 +11,14 @@
   },
   "customizations": {
     "vscode": {
+      "workspaceFolder": "/eMarket", // Workspace folder
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
-        "github.copilot" // Added extensions for better development experience
+        "ms-python.debugpy",
+        "github.copilot"// Added extensions for better development experience
       ]
     }
   },

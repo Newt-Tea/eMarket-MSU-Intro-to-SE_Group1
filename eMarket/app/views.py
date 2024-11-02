@@ -53,6 +53,8 @@ def register(request):
       #   user_type=form.cleaned_data.get('role')
       # )
       return redirect('registration_success')  # Redirect to success page
+    else:
+      print(form.errors)  # Add this line to print form errors
   else:
     form = RegistrationForm()
   
