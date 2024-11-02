@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Django RUN",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/eMarket/manage.py",
+            "args": [
+                "runserver",
+                "--noreload",
+                "--nothreading"
+            ],
+            "django": true
+        },
+        {
+            "name": "Django TEST",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/eMarket/manage.py",
+            "args": [
+                "test",
+                "app",
+            ],
+            "django": true
+        }
+    ]
+}
