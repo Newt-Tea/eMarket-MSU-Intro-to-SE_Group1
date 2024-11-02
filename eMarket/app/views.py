@@ -89,8 +89,7 @@ def add_to_cart(request, product_id):
 from django.shortcuts import get_object_or_404
 # Remove an item from user's cart
 def remove_from_cart(request, product_id):
-  product = Product.objects.get(id=product_id)
-  cart_item = get_object_or_404(Cart, user=request.user, product=product)
+  cart_item = get_object_or_404(Cart, user=request.user, product_id=product_id)
   cart_item.quantity -= 1
   if cart_item.quantity == 0:
     cart_item.delete()
@@ -122,14 +121,15 @@ def cart_checkout(request):
   total = sum(cart_item.get_total() for cart_item in cart)
   quantity = sum(cart_item.quantity for cart_item in cart)
 
-  cart = Cart.objects.get(user=request.user)
   order = Order.objects.create(
-    cart = cart,
     user = request.user, 
     total = total, 
     quantity = quantity,
     status = 'Confirmed' 
     )
+  order.cart.set(cart)
+  order.save()
+  cart.delete()
 
 # Payment Confirmed Page 
 def payment_confirmed(request):
