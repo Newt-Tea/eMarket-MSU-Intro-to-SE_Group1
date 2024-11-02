@@ -73,6 +73,9 @@ def shopping_cart(request):
   total = 0
   for item in cart_items:
     total = total + item.get_total()
+  for cart_item in cart_items:
+    if cart_item.quantity == 0:
+      cart_items.delete()
   return render(request, 'app/shopping_cart.html', {'cart_items': cart_items, 'total' : total})
 
 # Add an item to user's cart
@@ -83,28 +86,17 @@ def add_to_cart(request, product_id):
   cart_item.save()
   return redirect('shopping_cart')
 
+from django.shortcuts import get_object_or_404
 # Remove an item from user's cart
 def remove_from_cart(request, product_id):
-  cart = Cart.objects.get(user=request.user)
-  cart_item = Order.objects.get(product_id=product_id, cart = cart)  
-  if not cart_item:
-    return HttpResponse("Item not found", status = 404)
-  cart_item.delete()
+  product = Product.objects.get(id=product_id)
+  cart_item = get_object_or_404(Cart, user=request.user, product=product)
+  cart_item.quantity -= 1
+  if cart_item.quantity == 0:
+    cart_item.delete()
+  else:
+    cart_item.save()
   return redirect('shopping_cart')
-    
-# Save total and create an order    
-def cart_checkout(request):
-  cart = Cart.objects.get(user=request.user)
-
-  total = 0
-  for cart_item in cart:
-    total += cart_item.get_total()
-  
-  order = Order.objects.create(user = request.user, total = total)
-  order.save()
-  order.status = 'Confirmed'
-  cart.save()
-  return redirect('payment_confirmation')
 
 # Payment on the Checkout page
 from .forms import PaymentForm
@@ -117,10 +109,31 @@ def checkout(request):
   else:
     form = PaymentForm()
 
-  return render(request, 'app/checkout.html', {'form': form})
+  # for display of total
+    cart_items = Cart.objects.filter(user=request.user)
+    total = 0
+    for item in cart_items:
+      total = total + item.get_total()
+  return render(request, 'app/checkout.html', {'form': form, 'total' : total})
+
+# Save total and create an order    
+def cart_checkout(request):
+  cart = Cart.objects.filter(user=request.user)
+  total = sum(cart_item.get_total() for cart_item in cart)
+  quantity = sum(cart_item.quantity for cart_item in cart)
+
+  cart = Cart.objects.get(user=request.user)
+  order = Order.objects.create(
+    cart = cart,
+    user = request.user, 
+    total = total, 
+    quantity = quantity,
+    status = 'Confirmed' 
+    )
 
 # Payment Confirmed Page 
 def payment_confirmed(request):
+  cart_checkout(request)
   return render(request, 'app/payment_confirmed.html')
 
 ############################################

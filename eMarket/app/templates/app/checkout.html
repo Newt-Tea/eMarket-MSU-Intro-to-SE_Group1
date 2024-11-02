@@ -10,13 +10,9 @@
     <form method="POST">
       {% csrf_token %}
       {{ form.as_p }}
-        <p> Total: {{ cart.total }} </p>
-        <form action = "{% url 'cart_checkout' %}" method="POST">
-        {% csrf_token %}
+        <p> Total: ${{ total }} </p>
         <button type="submit">Pay</button>
-      </form>
     </form>
-  
     <p>
       <a href="{% url 'product_list' %}">Or continue shopping</a>
     </p>
