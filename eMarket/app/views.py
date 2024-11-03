@@ -66,9 +66,6 @@ def register(request):
 
 from django.contrib.auth.decorators import login_required
 @login_required
-##
-## This needs to be made functional
-##
 # Shopping Cart Page
 def shopping_cart(request):
   cart_items = Cart.objects.filter(user=request.user)
@@ -171,6 +168,11 @@ def add_product(request):
 def order_history(request):
     orders = Order.objects.filter(user=request.user)
     return render(request, 'app/order_history.html', {'orders': orders})
+  
+# Order Detail Page
+def order_detail(request, order_id):
+    order = Order.objects.get(id=order_id)
+    return render(request, 'app/order_detail.html', {'order': order})
 
 # Logout View
 from django.contrib.auth import logout

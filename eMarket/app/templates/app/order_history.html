@@ -16,7 +16,9 @@
     <h1>Order History</h1>
     <ul>
         {% for order in orders %}
-            <li>Order #{{ order.id }} - {{ order.date }} - ${{ order.total }}</li>
+            <li>
+                <a href="{% url 'order_detail' order.id %}">Order #{{ order.id }}</a> - {{ order.date }} - ${{ order.total }} - {{order.status}}
+            </li>
         {% empty %}
             <li>You have no orders.</li>
         {% endfor %}
