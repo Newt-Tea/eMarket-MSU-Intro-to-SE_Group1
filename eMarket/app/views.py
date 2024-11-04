@@ -3,7 +3,7 @@ from .models import Product, Cart, Order, User
 from django.contrib.auth.decorators import login_required
 
 #Main Product page
-@login_required
+
 def product_list(request):
     products = Product.objects.all()  # Fetch all products from the database
     return render(request, 'app/product_list.html', {'products': products})
