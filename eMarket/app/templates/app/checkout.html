@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+</head>
+<body>
+    <h2>Checkout</h2>
+    
+    <p><strong>Disclaimer:</strong> This information is not being used, recorded or stored. Please do not enter your real credit card information</p>
+    
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+        <p> Total: ${{ total }} </p>
+        <button type="submit">Pay</button>
+    </form>
+    <p>
+      <a href="{% url 'product_list' %}">Or continue shopping</a>
+    </p>
+</body>
+</html>

@@ -5,13 +5,27 @@
     <title>Order History</title>
 </head>
 <body>
+    <header>
+        <nav>
+          <ul>
+            <li><a href="{% url 'shopping_cart' %}">Shopping Cart</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+          </ul>
+        </nav>
+      </header>
     <h1>Order History</h1>
     <ul>
         {% for order in orders %}
-            <li>Order #{{ order.id }} - {{ order.date }} - ${{ order.total }}</li>
+            <li>
+                {% comment %} <a href="{% url 'order_detail' order.id %}"> {% endcomment %}
+                Order #{{ order.id }}</a> - {{ order.date }} - ${{ order.total }} - {{order.status}} 
+            </li>
         {% empty %}
             <li>You have no orders.</li>
         {% endfor %}
     </ul>
+    <footer>
+        <a href="{% url 'product_list' %}">Back to Product List</a>
+    </footer>
 </body>
 </html>
