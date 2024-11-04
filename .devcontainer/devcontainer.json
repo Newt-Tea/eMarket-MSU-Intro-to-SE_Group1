@@ -6,6 +6,7 @@
   "waitFor": "onCreateCommand", // Wait before running post-create commands
   "updateContentCommand": "cd eMarket && pip install -r requirements.txt && python manage.py migrate || echo 'Migration failed'", // Change directory, install dependencies and run migrations
   "postCreateCommand": "cd eMarket && cp .env.example .env || echo '.env file copy failed'", // Change directory and copy environment variables file
+  "postStartCommand": "cd eMarket && python manage.py collectstatic --noinput || echo 'Collect static failed'", // Change directory and collect static files
   "postAttachCommand": {
     "server": "cd eMarket && python manage.py runserver" // Change directory and start the server
   },
