@@ -16,3 +16,8 @@ class ProductCreationForm(ModelForm):
         labels = {
             'name' : 'Item Name',
             'price' : 'Price $'}
+        
+class PaymentForm(forms.Form):
+    card_number = forms.CharField(max_length = 16, label='Card Number')
+    expiry_date = forms.CharField(max_length = 10, label='Expiry Date (MM/YY)')
+    cvv = forms.CharField(label='CVV')
