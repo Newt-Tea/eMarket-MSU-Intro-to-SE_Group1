@@ -20,7 +20,11 @@
         "dbaeumer.vscode-eslint",
         "ms-python.debugpy",
         "github.copilot"// Added extensions for better development experience
-      ]
+      ],
+      "settings": {
+        "python.analysis.typeCheckingMode": "basic",
+        "python.analysis.autoImportCompletions": true
+      }
     }
   },
   "portsAttributes": {
