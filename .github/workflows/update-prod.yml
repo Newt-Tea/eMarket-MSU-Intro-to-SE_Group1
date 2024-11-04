@@ -1,0 +1,30 @@
+name: Merge Production into Branches
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get all branches
+        run: |
+          git fetch --all
+          git branch -r | grep -v '\->' | grep -v 'production' | sed 's/origin\///' > branches.txt # Fetch all remote branches except 'production' and save them to branches.txt
+
+      - name: Merge production into branches
+        run: |
+          while read branch; do
+            if ! git checkout $branch && git merge origin/production --no-edit; then
+              echo "Merge failed for branch $branch" | tee -a merge_errors.log
+            fi
+            if ! git push origin $branch; then
+              echo "Push failed for branch $branch" | tee -a push_errors.log
+            fi
+          done < branches.txt
