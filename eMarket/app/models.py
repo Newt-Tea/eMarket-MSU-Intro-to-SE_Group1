@@ -31,7 +31,7 @@ class CartProduct(models.Model):
         return self.quantity * self.product.price
 
 class Order(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'buyer'})
     cart = models.OneToOneField(Cart, on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField(default=1)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
