@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Product
+from .models import *
 
 # For product display within user page
 from django.utils.html import format_html
@@ -67,6 +67,17 @@ class ProductAdmin(admin.ModelAdmin):
     formattedProductID.short_description = 'Product ID'
     formattedProductID.admin_order_field = 'pk'
 
+# Cart Admin display
+class CartAdmin(admin.ModelAdmin):
+    pass
+
+# CartProduct Admin display
+class CartProductAdmin(admin.ModelAdmin):
+    pass
+
+# Order Admin display
+class OrderAdmin(admin.ModelAdmin):
+    pass
 
 
 
@@ -74,3 +85,6 @@ class ProductAdmin(admin.ModelAdmin):
 # Registered models
 admin.site.register(User, UserAdmin)
 admin.site.register(Product, ProductAdmin)
+admin.site.register(Cart, CartAdmin)
+admin.site.register(CartProduct, CartProductAdmin)
+admin.site.register(Order, OrderAdmin)
