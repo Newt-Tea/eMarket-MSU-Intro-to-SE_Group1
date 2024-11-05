@@ -1,9 +1,8 @@
-name: Merge Production into Branches
+name: Auto-Merge Production into Feature Branches
 
 on:
   push:
-    branches:
-      - production
+    branches: [ production ]
 
 jobs:
   merge:
