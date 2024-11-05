@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Cart, Order, User
 from django.contrib.auth.decorators import login_required
+from .forms import ProductCreationForm
 
 #Main Product page
 
@@ -87,7 +88,6 @@ def add_to_cart(request, product_id):
   cart_item.save()
   return redirect('shopping_cart')
 
-from django.shortcuts import get_object_or_404
 # Remove an item from user's cart
 def remove_from_cart(request, product_id):
   cart_item = get_object_or_404(Cart, user=request.user, product_id=product_id)
@@ -183,8 +183,30 @@ def logout_view(request):
   logout(request)
   return redirect('login')
 
+@login_required
 def seller_dashboard(request):
-    return render(request, 'app/seller_dashboard.html')
-  
+    products = Product.objects.filter(seller=request.user)
+    orders = Order.objects.filter(product__seller=request.user)
+    return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
+
+@login_required
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductCreationForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.seller = request.user
+            product.save()
+            return redirect('seller_dashboard')
+    else:
+        form = ProductCreationForm()
+    return render(request, 'app/create_product.html', {'form': form})
+
+@login_required
+def remove_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    product.delete()
+    return redirect('seller_dashboard')
+
 def home(request):
   return render(request, 'app/home.html')

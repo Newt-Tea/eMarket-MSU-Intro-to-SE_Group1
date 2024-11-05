@@ -12,10 +12,12 @@ class RegistrationForm(UserCreationForm, ModelForm):
 class ProductCreationForm(ModelForm):
     class Meta:
         model = Product
-        fields = ['name','price']
+        fields = ['name','price','stock']
         labels = {
             'name' : 'Item Name',
-            'price' : 'Price $'}
+            'price' : 'Price $',
+            'stock' : 'Stock'
+            }
         
 class PaymentForm(forms.Form):
     card_number = forms.CharField(max_length = 16, label='Card Number')

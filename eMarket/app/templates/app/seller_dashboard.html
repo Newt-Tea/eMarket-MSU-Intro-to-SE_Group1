@@ -6,6 +6,19 @@
     <title>Seller Dashboard</title>
 </head>
 <body>
-    <h1>This is the Seller Dashboard</h1>
+    <h1>Seller Dashboard</h1>
+    <a href="{% url 'create_product' %}">Create Product</a>
+    <h2>Your Products</h2>
+    <ul>
+        {% for id in products %}
+            <li>{{ product.name }} - <a href="{% url 'remove_product' product.id %}">Remove</a></li>
+        {% endfor %}
+    </ul>
+    <h2>Your Orders</h2>
+    <ul>
+        {% for order in orders %}
+            <li>{{ order.product.name }} - {{ order.customer.username }} - {{ order.status }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
