@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'app/product_list.css' %}">
   <title>Product List</title>
 </head>
 </html>
@@ -24,6 +26,7 @@
           <h2>{{ product.name }}</h2>
           <p>{{ product.description }}</p>
           <p>Price: ${{ product.price }}</p>
+          <a href="{% url 'add_to_cart' product.id %}">Add to Cart</a></br>
           <a href="{% url 'product_detail' product.id %}">View Details</a>
         </li>
       {% endfor %}

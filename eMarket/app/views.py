@@ -180,3 +180,6 @@ from django.contrib.auth import logout
 def logout_view(request):
     logout(request)
     return render(request, 'app/login.html')
+
+def seller_dashboard(request):
+    return render(request, 'app/seller_dashboard.html')
