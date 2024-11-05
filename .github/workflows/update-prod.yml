@@ -2,7 +2,7 @@ name: Auto-Merge Production into Feature Branches
 
 on:
   push:
-    branches: [ production ]
+    branches: [ "Production" ]
 
 jobs:
   merge:
