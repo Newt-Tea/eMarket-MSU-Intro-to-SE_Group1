@@ -87,7 +87,7 @@ class testView(TestCase):
 
     def test_register_view_post_valid(self):
         response = self.client.post(reverse('register'), {
-            'role': 'buyer',
+            'user_type': 'buyer',
             'username': 'newuser',
             'password1': 'AsUperGreaTPassw0rd!',
             'password2': 'AsUperGreaTPassw0rd!',
