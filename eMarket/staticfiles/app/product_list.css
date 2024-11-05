@@ -1,4 +1,3 @@
-
 body{
 	font-family: Arial, sans-serif;
 	margin: 0;
@@ -18,11 +17,15 @@ nav ul li{
 	display: inline;
 	margin-right: 15px;
 }
-nav a{
+nav a, nav button{
 	color: white;
 	text-decoration: none;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font: inherit;
 }
-nav a:hover{
+nav a:hover, nav button.hover{
 	text-decoration: underline;
 }
 main{
@@ -45,11 +48,11 @@ li{
 h2 {
       margin: 0;
       font-size: 1.5em;
-    }
-    p {
-      margin: 5px 0;
-    }
-    a.view-details {
-      color: #007BFF;
-      font-weight: bold;
-    }
+}
+p {
+	margin: 5px 0;
+}
+a.view-details {
+	color: #007BFF;
+	font-weight: bold;
+}
