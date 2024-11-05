@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-imb&cpk2vc^)=3h(+7y@)+!26@ttjk+z)dzz5gr%75wfoa8p@i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['newttea.pythonanywhere.com']
 
 
 # Application definition
