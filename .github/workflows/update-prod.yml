@@ -1,5 +1,8 @@
 name: Auto-Merge Production into Feature Branches
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ "Production" ]
