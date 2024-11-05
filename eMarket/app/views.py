@@ -186,7 +186,7 @@ def logout_view(request):
 @login_required
 def seller_dashboard(request):
     products = Product.objects.filter(seller=request.user).distinct()
-    orders = Order.objects.filter(cartproduct__product__seller=request.user).distinct()
+    orders = Order.objects.filter(cart__cartProducts__product__seller=request.user).distinct()
     return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
 
 @login_required

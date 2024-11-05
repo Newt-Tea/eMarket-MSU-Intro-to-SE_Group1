@@ -11,13 +11,13 @@
     <h2>Your Products</h2>
     <ul>
         {% for product in products %}
-            <li>{{ product.name }} - <a href="{% url 'remove_product' product.id %}">Remove</a></li>
+            <li>{{ product.name }} - In Stock:{{product.stock}} - <a href="{% url 'remove_product' product.id %}">Remove</a></li>
         {% endfor %}
     </ul>
     <h2>Your Orders</h2>
     <ul>
-        {% for order in orders %}
-            <li>{{ order.cartproduct.product.name }} - {{ order.user.username }} - {{ order.status }}</li>
+        {% for cart_product in order.cart.cartProducts.all %}
+            <li>{{cart_product.product.name }} - {{cart_product.quantity}} - {{ order.user.username }} - {{ order.status }}</li>
         {% endfor %}
     </ul>
 </body>
