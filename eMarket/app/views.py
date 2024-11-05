@@ -1,12 +1,29 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Cart, Order, User
+from .utils import search, sort
 from django.contrib.auth.decorators import login_required
 from .forms import ProductCreationForm
-
 #Main Product page
-
 def product_list(request):
-    products = Product.objects.all()  # Fetch all products from the database
+    query = request.GET.get('q')
+    sort_order = request.GET.get('sort')
+    products = list(Product.objects.all())  # Fetch all products from the database
+    
+    if query:
+        product_names = [product.name for product in products]
+        search_results = search(query.lower(), product_names)
+        products = [products[result[0]] for result in search_results]
+    
+    if sort_order:
+        if sort_order == 'price_asc':
+            products.sort(key=lambda x: x.price)
+        elif sort_order == 'price_desc':
+            products.sort(key=lambda x: x.price, reverse=True)
+        elif sort_order == 'name_asc':
+            products.sort(key=lambda x: x.name)
+        elif sort_order == 'name_desc':
+            products.sort(key=lambda x: x.name, reverse=True)
+    
     return render(request, 'app/product_list.html', {'products': products})
   
 #Product Detail Page
@@ -68,8 +85,8 @@ def register(request):
 ######################################
 
 
-@login_required
 # Shopping Cart Page
+@login_required
 def shopping_cart(request):
   cart_items = Cart.objects.filter(user=request.user)
   total = 0
@@ -100,7 +117,7 @@ def remove_from_cart(request, product_id):
 
 # Payment on the Checkout page
 from .forms import PaymentForm
-
+@login_required
 def checkout(request):
   if request.method == 'POST':
     form = PaymentForm(request.POST)
@@ -178,10 +195,12 @@ def order_detail(request, order_id):
 
 # Logout View
 from django.contrib.auth import logout
+from django.views.decorators.http import require_POST 
 
+@require_POST
 def logout_view(request):
   logout(request)
-  return redirect('login')
+  return render(request, 'app/logout.html')
 
 @login_required
 def seller_dashboard(request):
