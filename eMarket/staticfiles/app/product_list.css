@@ -17,6 +17,7 @@ nav ul li{
 	display: inline;
 	margin-right: 15px;
 }
+
 nav a, nav button{
 	color: white;
 	text-decoration: none;
@@ -26,6 +27,7 @@ nav a, nav button{
 	font: inherit;
 }
 nav a:hover, nav button.hover{
+
 	text-decoration: underline;
 }
 main{
