@@ -3,9 +3,7 @@ from .models import Product, Cart, Order, User
 from .utils import search, sort
 from django.contrib.auth.decorators import login_required
 from .forms import ProductCreationForm
-
 #Main Product page
-
 def product_list(request):
     query = request.GET.get('q')
     sort_order = request.GET.get('sort')
@@ -204,10 +202,8 @@ def logout_view(request):
   logout(request)
   return render(request, 'app/logout.html')
 
-
 @login_required
 def seller_dashboard(request):
-
     products = Product.objects.filter(seller=request.user).distinct()
     orders = Order.objects.filter(cart__cartProducts__product__seller=request.user).distinct()
     return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
@@ -230,7 +226,6 @@ def remove_product(request, product_id):
     product = get_object_or_404(Product, id=product_id, seller=request.user)
     product.delete()
     return redirect('seller_dashboard')
-
 
 def home(request):
   return render(request, 'app/home.html')
