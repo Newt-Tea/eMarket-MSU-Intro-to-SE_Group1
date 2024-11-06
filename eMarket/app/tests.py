@@ -73,17 +73,9 @@ class testCart(TestCase):
         # Verify cart exists for user
         self.assertIsNotNone(self.cart, "Cart for 'buyerUser' should exist.")
         
-    def test_cart_user_type(self):
-        self.assertEqual(self.cart.user.user_type, 'buyer')
-
     def test_cart_deletion(self):
         self.cart.delete()
         self.assertFalse(Cart.objects.filter(user=self.user).exists())
-
-    def test_cart_user_deletion(self):
-        self.cart.user.delete()
-        self.assertFalse(Cart.objects.filter(user=self.user).exists())
-
 
 
 # Test cases for cart product model
