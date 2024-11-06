@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Cart, Order, User
+from .utils import search, sort
 from django.contrib.auth.decorators import login_required
 from .forms import ProductCreationForm, ProductSearchForm
 from .utils import search, sort
 
 #Main Product page
-
 def product_list(request):
   form = ProductSearchForm(request.GET or None)
   products = list(Product.objects.all())  # Convert queryset to list for sorting
@@ -91,8 +91,8 @@ def register(request):
 ######################################
 
 
-@login_required
 # Shopping Cart Page
+@login_required
 def shopping_cart(request):
   cart_items = Cart.objects.filter(user=request.user)
   total = 0
@@ -123,7 +123,7 @@ def remove_from_cart(request, product_id):
 
 # Payment on the Checkout page
 from .forms import PaymentForm
-
+@login_required
 def checkout(request):
   if request.method == 'POST':
     form = PaymentForm(request.POST)
@@ -201,10 +201,12 @@ def order_detail(request, order_id):
 
 # Logout View
 from django.contrib.auth import logout
+from django.views.decorators.http import require_POST 
 
+@require_POST
 def logout_view(request):
   logout(request)
-  return redirect('login')
+  return render(request, 'app/logout.html')
 
 @login_required
 def seller_dashboard(request):

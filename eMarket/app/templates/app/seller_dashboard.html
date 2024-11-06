@@ -7,6 +7,10 @@
 </head>
 <body>
     <h1>Seller Dashboard</h1>
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
     <a href="{% url 'create_product' %}">Create Product</a>
     <h2>Your Products</h2>
     <ul>
