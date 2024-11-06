@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Cart, Order, User
-from .utils import search, sort
 from django.contrib.auth.decorators import login_required
 from .forms import ProductCreationForm, ProductSearchForm
-from .utils import search, sort
+from .utils import search
 
 #Main Product page
 def product_list(request):
