@@ -106,17 +106,19 @@ def add_to_cart(request, product_id):
   product = Product.objects.get(id=product_id)
   cart, cart_created = Cart.objects.get_or_create(user=request.user)
   cartProduct, cartProduct_created = CartProduct.objects.get_or_create(cart=cart,product=product)
-  if not cartProduct_created: cartProduct.quantity += 1; cartProduct.save()
+  if not cartProduct_created: cartProduct.quantity += 1; cartProduct.save() # FIXME: quantity += 1 needs to be changed when multiple-item addition is added
   return redirect('shopping_cart')
 
 # Remove an item from user's cart
 def remove_from_cart(request, product_id):
-  cart_item = get_object_or_404(Cart, user=request.user, product_id=product_id)
-  cart_item.quantity -= 1
-  if cart_item.quantity == 0:
-    cart_item.delete()
+  cart = get_object_or_404(Cart, user=request.user)
+  product = get_object_or_404(Product, pk=product_id)
+  cartProduct = get_object_or_404(CartProduct, cart=cart, product=product)
+  cartProduct.quantity -= 1
+  if cartProduct.quantity <= 0:
+    cartProduct.delete()
   else:
-    cart_item.save()
+    cartProduct.save()
   return redirect('shopping_cart')
 
 # Payment on the Checkout page
@@ -131,25 +133,30 @@ def checkout(request):
     form = PaymentForm()
 
   # for display of total
-    cart_items = Cart.objects.filter(user=request.user)
+    cart = Cart.objects.get(user=request.user)
+    cartProducts = cart.cartProducts.all()
     total = 0
-    for item in cart_items:
+    for item in cartProducts:
       total = total + item.get_total()
   return render(request, 'app/checkout.html', {'form': form, 'total' : total})
 
 # Save total and create an order    
 def cart_checkout(request):
-  cart = Cart.objects.filter(user=request.user)
-  total = sum(cart_item.get_total() for cart_item in cart)
-  quantity = sum(cart_item.quantity for cart_item in cart)
+  cart = Cart.objects.get(user=request.user)
+  cartProducts = cart.cartProducts.all()
+  total = 0
+  quantity = 0
+  for item in cartProducts:
+    total = total + item.get_total()
+    quantity = quantity + item.quantity
 
   order = Order.objects.create(
-    user = request.user, 
+    user = request.user,
+    cart = cart, 
     total = total, 
     quantity = quantity,
     status = 'Confirmed' 
     )
-  order.cart.set(cart)
   order.save()
   cart.delete()
 
