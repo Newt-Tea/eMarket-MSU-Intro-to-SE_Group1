@@ -214,6 +214,10 @@ def seller_dashboard(request):
     return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
 
 @login_required
+def admin_dashboard(request):
+  return render(request, 'app/admin_dashboard.html')
+
+@login_required
 def create_product(request):
     if request.method == 'POST':
         form = ProductCreationForm(request.POST)
