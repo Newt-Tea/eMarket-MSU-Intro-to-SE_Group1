@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .models import Product, Cart, Order, User
+from django.contrib.auth.decorators import login_required
 
 #Main Product page
+
 def product_list(request):
     products = Product.objects.all()  # Fetch all products from the database
     return render(request, 'app/product_list.html', {'products': products})
@@ -64,7 +66,7 @@ def register(request):
 ########### CART FUNCTIONS ###########
 ######################################
 
-from django.contrib.auth.decorators import login_required
+
 @login_required
 # Shopping Cart Page
 def shopping_cart(request):
@@ -178,8 +180,11 @@ def order_detail(request, order_id):
 from django.contrib.auth import logout
 
 def logout_view(request):
-    logout(request)
-    return render(request, 'app/login.html')
+  logout(request)
+  return redirect('login')
 
 def seller_dashboard(request):
     return render(request, 'app/seller_dashboard.html')
+  
+def home(request):
+  return render(request, 'app/home.html')
