@@ -1,13 +1,34 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Cart, Order, User
 from django.contrib.auth.decorators import login_required
-from .forms import ProductCreationForm
+from .forms import ProductCreationForm, ProductSearchForm
+from .utils import search, sort
 
 #Main Product page
 
 def product_list(request):
-    products = Product.objects.all()  # Fetch all products from the database
-    return render(request, 'app/product_list.html', {'products': products})
+  form = ProductSearchForm(request.GET or None)
+  products = list(Product.objects.all())  # Convert queryset to list for sorting
+
+  if form.is_valid():
+    search_query = form.cleaned_data.get('search_query')
+    sort_option = form.cleaned_data.get('sort')
+
+    if search_query:
+      search_results = search(search_query.lower(), [product.name.lower() for product in products])
+      products = [products[i[0]] for i in search_results] 
+
+    if sort_option == 'price_asc':
+      products.sort(key=lambda product: product.price)
+    elif sort_option == 'price_desc':
+      products.sort(key=lambda product: -product.price)
+    elif sort_option == 'name_asc':
+      products.sort(key=lambda product: product.name.lower())
+    elif sort_option == 'name_desc':
+      products.sort(key=lambda product: product.name.lower(), reverse=True)
+
+  return render(request, 'app/product_list.html', {'form': form, 'products': products})
+  
   
 #Product Detail Page
 def product_detail(request, product_id):

@@ -23,3 +23,22 @@ class PaymentForm(forms.Form):
     card_number = forms.CharField(max_length = 16, label='Card Number')
     expiry_date = forms.CharField(max_length = 5, label='Expiry Date (MM/YY)')
     cvv = forms.CharField(max_length = 3, label='CVV')
+
+class ProductSearchForm(forms.Form):
+    search_query = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Search products...'}),
+        label=''
+    )
+    SORT_CHOICES = [
+        ('', 'Sort by'),
+        ('price_asc', 'Price: Low to High'),
+        ('price_desc', 'Price: High to Low'),
+        ('name_asc', 'Name: A to Z'),
+        ('name_desc', 'Name: Z to A')
+    ]
+    sort = forms.ChoiceField(
+        choices=SORT_CHOICES,
+        required=False,
+        label=''
+    )
