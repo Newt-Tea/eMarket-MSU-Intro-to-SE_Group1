@@ -18,7 +18,9 @@ def product_list(request):
       search_results = search(search_query.lower(), [product.name.lower() for product in products])
       products = [products[i[0]] for i in search_results] 
 
-    if sort_option == 'price_asc':
+    if sort_option =='rel':
+      products = products
+    elif sort_option == 'price_asc':
       products.sort(key=lambda product: product.price)
     elif sort_option == 'price_desc':
       products.sort(key=lambda product: -product.price)

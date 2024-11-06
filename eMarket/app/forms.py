@@ -31,7 +31,7 @@ class ProductSearchForm(forms.Form):
         label=''
     )
     SORT_CHOICES = [
-        ('', 'Sort by'),
+        ('rel','Relevance'),
         ('price_asc', 'Price: Low to High'),
         ('price_desc', 'Price: High to Low'),
         ('name_asc', 'Name: A to Z'),
