@@ -24,6 +24,11 @@
   </header>
   <main>
     <h1>Product List</h1>
+    <form method="GET" action="{% url 'product_list' %}">
+      {{ form.search_query }}
+      {{ form.sort }}
+      <button type="submit">Search & Sort</button>
+    </form>
     <ul>
       {% for product in products %}
         <li>

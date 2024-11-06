@@ -1,30 +1,35 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Cart, Order, User
-from .utils import search, sort
 from django.contrib.auth.decorators import login_required
-from .forms import ProductCreationForm
+from .forms import ProductCreationForm, ProductSearchForm
+from .utils import search
+
 #Main Product page
 def product_list(request):
-    query = request.GET.get('q')
-    sort_order = request.GET.get('sort')
-    products = list(Product.objects.all())  # Fetch all products from the database
-    
-    if query:
-        product_names = [product.name for product in products]
-        search_results = search(query.lower(), product_names)
-        products = [products[result[0]] for result in search_results]
-    
-    if sort_order:
-        if sort_order == 'price_asc':
-            products.sort(key=lambda x: x.price)
-        elif sort_order == 'price_desc':
-            products.sort(key=lambda x: x.price, reverse=True)
-        elif sort_order == 'name_asc':
-            products.sort(key=lambda x: x.name)
-        elif sort_order == 'name_desc':
-            products.sort(key=lambda x: x.name, reverse=True)
-    
-    return render(request, 'app/product_list.html', {'products': products})
+  form = ProductSearchForm(request.GET or None)
+  products = list(Product.objects.all())  # Convert queryset to list for sorting
+
+  if form.is_valid():
+    search_query = form.cleaned_data.get('search_query')
+    sort_option = form.cleaned_data.get('sort')
+
+    if search_query:
+      search_results = search(search_query.lower(), [product.name.lower() for product in products])
+      products = [products[i[0]] for i in search_results] 
+
+    if sort_option =='rel':
+      products = products
+    elif sort_option == 'price_asc':
+      products.sort(key=lambda product: product.price)
+    elif sort_option == 'price_desc':
+      products.sort(key=lambda product: -product.price)
+    elif sort_option == 'name_asc':
+      products.sort(key=lambda product: product.name.lower())
+    elif sort_option == 'name_desc':
+      products.sort(key=lambda product: product.name.lower(), reverse=True)
+
+  return render(request, 'app/product_list.html', {'form': form, 'products': products})
+  
   
 #Product Detail Page
 def product_detail(request, product_id):

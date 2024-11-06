@@ -35,7 +35,6 @@ def sort(a,low=0,high=-1):
 # Array form = [[productIndex,similarity],[productIndex2,similarity2]...]
 def search(searchInput,productList):
     searchResults = []
-    maxNameLength = 50 # Replace with max_value of Product name in the future
     for i in range(len(productList)):
         product = productList[i].lower()
         m = len(searchInput)
