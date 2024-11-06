@@ -63,7 +63,7 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('name', 'price', 'stock', 'date_created', ),
         }),
         ('Seller Information', {
-            'fields': ('seller_username', ),
+            'fields': ('seller', ),
         }),
     )
     readonly_fields = ('date_created', )

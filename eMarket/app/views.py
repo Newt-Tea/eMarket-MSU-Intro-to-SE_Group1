@@ -147,8 +147,13 @@ def cart_checkout(request):
   total = 0
   quantity = 0
   for item in cartProducts:
+    product = Product.objects.get(pk=item.product.pk)
     total = total + item.get_total()
     quantity = quantity + item.quantity
+    product.stock -= item.quantity
+    if product.stock <= 0:
+      product.delete()
+      
 
   order = Order.objects.create(
     user = request.user,
