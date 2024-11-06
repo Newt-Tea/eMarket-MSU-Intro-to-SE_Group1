@@ -25,7 +25,7 @@ class UserAdmin(admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         
         # Check if the user_type is 'seller' to add the "Seller Products" fieldset
-        if request.user.user_type == 'seller':
+        if obj.user_type == 'seller':
             # Append the Seller Products fieldset
             fieldsets += (
                 ('Seller Products', {
