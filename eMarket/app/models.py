@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
@@ -15,7 +15,6 @@ class Product(models.Model):
     price = models.DecimalField(decimal_places=2, max_digits=10,default=0)
     stock = models.PositiveIntegerField(default=1)
     date_created = models.DateTimeField(null=True,auto_now_add=True)
-
     seller = models.ForeignKey(User, on_delete=models.CASCADE, null=True, limit_choices_to={'user_type': 'seller'}, related_name='products')
 
     def __str__(self):
@@ -33,7 +32,8 @@ class CartProduct(models.Model):
         return self.quantity * self.product.price
 
 class Order(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_order_id = models.PositiveIntegerField(default=1)
     cart = models.OneToOneField(Cart, on_delete=models.SET_NULL, null=True)
     cart_products = models.JSONField(null=True)
     quantity = models.PositiveIntegerField(default=1)
@@ -43,14 +43,18 @@ class Order(models.Model):
     
     def save(self, *args, **kwargs):
         """
-        Custom save method to populate the products field from the CartProduct items
-        if the products field is empty and there's an associated cart. (Will automatically fire upon object creation/saving)
+        Custom save method to populate `user_order_id` for new orders and the products field from the CartProduct items.
         """
-        # If products are not yet populated and the order has a cart, populate the products field
+        # Only assign a new user_order_id if this is a new order
+        if self._state.adding:
+            # Calculate user_order_id based on the user's existing orders
+            self.user_order_id = Order.objects.filter(user=self.user).count() + 1
+
+        # Populate cart_products if empty and there's an associated cart
         if not self.cart_products and self.cart:
             self.populate_order_cart_products()
 
-        # Call the parent class's save method to handle the database saving
+        # Save the order
         super().save(*args, **kwargs)
     
     def populate_order_cart_products(self):
@@ -63,9 +67,12 @@ class Order(models.Model):
         if cart:
             cart_products = cart.cartProducts.all()
             products_dict = {
-                cart_product.product.pk: cart_product.quantity
+                cart_product.product.pk: {
+                    'name': cart_product.product.name,
+                    'price': str(cart_product.product.price),
+                    'quantity': str(cart_product.quantity),
+                    'seller': cart_product.product.seller.username if cart_product.product.seller else None,
+                }
                 for cart_product in cart_products
             }
             self.cart_products = products_dict
-            
-        

@@ -151,6 +151,7 @@ def cart_checkout(request):
     total = total + item.get_total()
     quantity = quantity + item.quantity
     product.stock -= item.quantity
+    product.save()
     if product.stock <= 0:
       product.delete()
       
@@ -161,8 +162,7 @@ def cart_checkout(request):
     total = total, 
     quantity = quantity,
     status = 'Confirmed' 
-    )
-  order.save()
+  )
   cart.delete()
 
 # Payment Confirmed Page 
