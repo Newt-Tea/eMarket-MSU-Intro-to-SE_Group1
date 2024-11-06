@@ -39,6 +39,14 @@ class testUser(TestCase):
         self.assertEqual(self.buyerUser.pk, 2, "Username search should return the correct user ID.")
         self.assertEqual(userCount, 4, "The total number of users should be 4.")
         self.assertEqual(adminCount, 2, "The number of admin users should be 2.")
+        
+    def test_UserPassword(self):
+        print("\nTest: test_UserPassword")
+        # Verify that the passwords are set correctly and can be authenticated
+        self.assertTrue(self.adminUser.check_password('adminPass'), "Admin user's password should be 'adminPass'.")
+        self.assertTrue(self.buyerUser.check_password('buyerPass'), "Buyer user's password should be 'buyerPass'.")
+        self.assertTrue(self.sellerUser.check_password('sellerPass'), "Seller user's password should be 'sellerPass'.")
+        self.assertTrue(self.anotherAdmin.check_password('password123'), "Another admin user's password should be 'password123'.")
 
 # Test cases for product model
 class testProduct(TestCase):
@@ -58,11 +66,25 @@ class testCart(TestCase):
         # Create test user and cart, assign to self
         self.user = User.objects.create_user(username='buyerUser', password='buyerPass', user_type='buyer')
         self.cart = Cart.objects.create(user=self.user)
+        self.sellerUser = User.objects.create_user(username='sellerUser', password='sellerPass', user_type='seller')
     
     def test_CartExists(self):
         print("\nTest: test_CartExists")
         # Verify cart exists for user
         self.assertIsNotNone(self.cart, "Cart for 'buyerUser' should exist.")
+        
+    def test_cart_user_type(self):
+        self.assertEqual(self.cart.user.user_type, 'buyer')
+
+    def test_cart_deletion(self):
+        self.cart.delete()
+        self.assertFalse(Cart.objects.filter(user=self.user).exists())
+
+    def test_cart_user_deletion(self):
+        self.cart.user.delete()
+        self.assertFalse(Cart.objects.filter(user=self.user).exists())
+
+
 
 # Test cases for cart product model
 class testCartProduct(TestCase):
