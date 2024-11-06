@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from .models import Product, Cart, Order, User
+from .models import *
 from django.contrib.auth.decorators import login_required
 from .forms import ProductCreationForm, ProductSearchForm
 from .utils import search
@@ -93,21 +93,20 @@ def register(request):
 # Shopping Cart Page
 @login_required
 def shopping_cart(request):
-  cart_items = Cart.objects.filter(user=request.user)
+  cart = Cart.objects.get(user=request.user)
+  cartProducts = cart.cartProducts.all()
   total = 0
-  for item in cart_items:
+  for item in cartProducts:
     total = total + item.get_total()
-  for cart_item in cart_items:
-    if cart_item.quantity == 0:
-      cart_items.delete()
-  return render(request, 'app/shopping_cart.html', {'cart_items': cart_items, 'total' : total})
+    if item.quantity == 0: item.delete()
+  return render(request, 'app/shopping_cart.html', {'cartProducts': cartProducts, 'total' : total})
 
 # Add an item to user's cart
 def add_to_cart(request, product_id):
   product = Product.objects.get(id=product_id)
-  cart_item, cart_created = Cart.objects.get_or_create(user=request.user, product=product)
-  cart_item.quantity += 1
-  cart_item.save()
+  cart, cart_created = Cart.objects.get_or_create(user=request.user)
+  cartProduct, cartProduct_created = CartProduct.objects.get_or_create(cart=cart,product=product)
+  if not cartProduct_created: cartProduct.quantity += 1; cartProduct.save()
   return redirect('shopping_cart')
 
 # Remove an item from user's cart

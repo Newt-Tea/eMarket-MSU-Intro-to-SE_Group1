@@ -10,7 +10,7 @@
 <body>
     <h1>Shopping Cart</h1>
     <ul>
-        {% for item in cart_items %}
+        {% for item in cartProducts %}
             <li>{{ item.product.name }} - {{ item.quantity }} - ${{ item.get_total }}</li>
             <a href="{% url 'remove_from_cart' item.product_id %}">Remove one from cart</a>
         {% empty %}
