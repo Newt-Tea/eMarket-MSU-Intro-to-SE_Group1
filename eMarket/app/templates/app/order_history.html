@@ -20,8 +20,8 @@
     <ul>
         {% for order in orders %}
             <li>
-                {% comment %} <a href="{% url 'order_detail' order.id %}"> {% endcomment %}
-                Order #{{ order.id }}</a> - {{ order.date }} - ${{ order.total }} - {{order.status}} 
+                <a href="{% url 'order_detail' order.id %}">
+                Order #{{ order.user_order_id }}</a> - {{ order.date }} - ${{ order.total }} - {{order.status}} 
             </li>
         {% empty %}
             <li>You have no orders.</li>

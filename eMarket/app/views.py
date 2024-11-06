@@ -161,8 +161,7 @@ def cart_checkout(request):
     total = total, 
     quantity = quantity,
     status = 'Confirmed' 
-    )
-  order.save()
+  )
   cart.delete()
 
 # Payment Confirmed Page 
