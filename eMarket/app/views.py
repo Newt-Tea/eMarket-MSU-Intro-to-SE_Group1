@@ -1,11 +1,29 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Cart, Order, User
+from .utils import search, sort
 from django.contrib.auth.decorators import login_required
-
+from .forms import ProductCreationForm
 #Main Product page
-
 def product_list(request):
-    products = Product.objects.all()  # Fetch all products from the database
+    query = request.GET.get('q')
+    sort_order = request.GET.get('sort')
+    products = list(Product.objects.all())  # Fetch all products from the database
+    
+    if query:
+        product_names = [product.name for product in products]
+        search_results = search(query.lower(), product_names)
+        products = [products[result[0]] for result in search_results]
+    
+    if sort_order:
+        if sort_order == 'price_asc':
+            products.sort(key=lambda x: x.price)
+        elif sort_order == 'price_desc':
+            products.sort(key=lambda x: x.price, reverse=True)
+        elif sort_order == 'name_asc':
+            products.sort(key=lambda x: x.name)
+        elif sort_order == 'name_desc':
+            products.sort(key=lambda x: x.name, reverse=True)
+    
     return render(request, 'app/product_list.html', {'products': products})
   
 #Product Detail Page
@@ -67,8 +85,8 @@ def register(request):
 ######################################
 
 
-@login_required
 # Shopping Cart Page
+@login_required
 def shopping_cart(request):
   cart_items = Cart.objects.filter(user=request.user)
   total = 0
@@ -87,7 +105,6 @@ def add_to_cart(request, product_id):
   cart_item.save()
   return redirect('shopping_cart')
 
-from django.shortcuts import get_object_or_404
 # Remove an item from user's cart
 def remove_from_cart(request, product_id):
   cart_item = get_object_or_404(Cart, user=request.user, product_id=product_id)
@@ -100,7 +117,7 @@ def remove_from_cart(request, product_id):
 
 # Payment on the Checkout page
 from .forms import PaymentForm
-
+@login_required
 def checkout(request):
   if request.method == 'POST':
     form = PaymentForm(request.POST)
@@ -178,13 +195,37 @@ def order_detail(request, order_id):
 
 # Logout View
 from django.contrib.auth import logout
+from django.views.decorators.http import require_POST 
 
+@require_POST
 def logout_view(request):
   logout(request)
-  return redirect('login')
+  return render(request, 'app/logout.html')
 
+@login_required
 def seller_dashboard(request):
-    return render(request, 'app/seller_dashboard.html')
-  
+    products = Product.objects.filter(seller=request.user).distinct()
+    orders = Order.objects.filter(cart__cartProducts__product__seller=request.user).distinct()
+    return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
+
+@login_required
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductCreationForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.seller = request.user
+            product.save()
+            return redirect('seller_dashboard')
+    else:
+        form = ProductCreationForm()
+    return render(request, 'app/create_product.html', {'form': form})
+
+@login_required
+def remove_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    product.delete()
+    return redirect('seller_dashboard')
+
 def home(request):
   return render(request, 'app/home.html')
