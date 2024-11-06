@@ -151,9 +151,9 @@ def cart_checkout(request):
     total = total + item.get_total()
     quantity = quantity + item.quantity
     product.stock -= item.quantity
+    product.save()
     if product.stock <= 0:
       product.delete()
-    product.save()
       
 
   order = Order.objects.create(
