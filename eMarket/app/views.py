@@ -1,10 +1,35 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import Product, Cart, Order, User
+from django.contrib.auth.decorators import login_required
+from .forms import ProductCreationForm, ProductSearchForm
+from .utils import search
 
 #Main Product page
 def product_list(request):
-    products = Product.objects.all()  # Fetch all products from the database
-    return render(request, 'app/product_list.html', {'products': products})
+  form = ProductSearchForm(request.GET or None)
+  products = list(Product.objects.all())  # Convert queryset to list for sorting
+
+  if form.is_valid():
+    search_query = form.cleaned_data.get('search_query')
+    sort_option = form.cleaned_data.get('sort')
+
+    if search_query:
+      search_results = search(search_query.lower(), [product.name.lower() for product in products])
+      products = [products[i[0]] for i in search_results] 
+
+    if sort_option =='rel':
+      products = products
+    elif sort_option == 'price_asc':
+      products.sort(key=lambda product: product.price)
+    elif sort_option == 'price_desc':
+      products.sort(key=lambda product: -product.price)
+    elif sort_option == 'name_asc':
+      products.sort(key=lambda product: product.name.lower())
+    elif sort_option == 'name_desc':
+      products.sort(key=lambda product: product.name.lower(), reverse=True)
+
+  return render(request, 'app/product_list.html', {'form': form, 'products': products})
+  
   
 #Product Detail Page
 def product_detail(request, product_id):
@@ -64,9 +89,9 @@ def register(request):
 ########### CART FUNCTIONS ###########
 ######################################
 
-from django.contrib.auth.decorators import login_required
-@login_required
+
 # Shopping Cart Page
+@login_required
 def shopping_cart(request):
   cart_items = Cart.objects.filter(user=request.user)
   total = 0
@@ -85,7 +110,6 @@ def add_to_cart(request, product_id):
   cart_item.save()
   return redirect('shopping_cart')
 
-from django.shortcuts import get_object_or_404
 # Remove an item from user's cart
 def remove_from_cart(request, product_id):
   cart_item = get_object_or_404(Cart, user=request.user, product_id=product_id)
@@ -98,7 +122,7 @@ def remove_from_cart(request, product_id):
 
 # Payment on the Checkout page
 from .forms import PaymentForm
-
+@login_required
 def checkout(request):
   if request.method == 'POST':
     form = PaymentForm(request.POST)
@@ -176,10 +200,37 @@ def order_detail(request, order_id):
 
 # Logout View
 from django.contrib.auth import logout
+from django.views.decorators.http import require_POST 
 
+@require_POST
 def logout_view(request):
-    logout(request)
-    return render(request, 'app/login.html')
+  logout(request)
+  return render(request, 'app/logout.html')
 
+@login_required
 def seller_dashboard(request):
-    return render(request, 'app/seller_dashboard.html')
+    products = Product.objects.filter(seller=request.user).distinct()
+    orders = Order.objects.filter(cart__cartProducts__product__seller=request.user).distinct()
+    return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
+
+@login_required
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductCreationForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.seller = request.user
+            product.save()
+            return redirect('seller_dashboard')
+    else:
+        form = ProductCreationForm()
+    return render(request, 'app/create_product.html', {'form': form})
+
+@login_required
+def remove_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    product.delete()
+    return redirect('seller_dashboard')
+
+def home(request):
+  return render(request, 'app/home.html')

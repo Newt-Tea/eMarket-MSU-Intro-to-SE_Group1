@@ -6,6 +6,23 @@
     <title>Seller Dashboard</title>
 </head>
 <body>
-    <h1>This is the Seller Dashboard</h1>
+    <h1>Seller Dashboard</h1>
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    <a href="{% url 'create_product' %}">Create Product</a>
+    <h2>Your Products</h2>
+    <ul>
+        {% for product in products %}
+            <li>{{ product.name }} - In Stock:{{product.stock}} - <a href="{% url 'remove_product' product.id %}">Remove</a></li>
+        {% endfor %}
+    </ul>
+    <h2>Your Orders</h2>
+    <ul>
+        {% for cart_product in order.cart.cartProducts.all %}
+            <li>{{cart_product.product.name }} - {{cart_product.quantity}} - {{ order.user.username }} - {{ order.status }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>

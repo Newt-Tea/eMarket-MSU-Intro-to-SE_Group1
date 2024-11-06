@@ -11,11 +11,13 @@ class User(AbstractUser):
     pending = models.BooleanField(default=True)
 
 class Product(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     price = models.DecimalField(decimal_places=2, max_digits=10,default=0)
     stock = models.PositiveIntegerField(default=1)
     date_created = models.DateTimeField(null=True,auto_now_add=True)
-    seller_username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, limit_choices_to={'user_type': 'seller'}, related_name='products')
+
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, null=True, limit_choices_to={'user_type': 'seller'}, related_name='products')
+
     def __str__(self):
         return self.name
 
@@ -31,8 +33,39 @@ class CartProduct(models.Model):
         return self.quantity * self.product.price
 
 class Order(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'buyer'})
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     cart = models.OneToOneField(Cart, on_delete=models.SET_NULL, null=True)
+    cart_products = models.JSONField(null=True)
     quantity = models.PositiveIntegerField(default=1)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length = 50, default='Pending')
+    date_created = models.DateTimeField(null=True,auto_now_add=True)
+    
+    def save(self, *args, **kwargs):
+        """
+        Custom save method to populate the products field from the CartProduct items
+        if the products field is empty and there's an associated cart. (Will automatically fire upon object creation/saving)
+        """
+        # If products are not yet populated and the order has a cart, populate the products field
+        if not self.cart_products and self.cart:
+            self.populate_order_cart_products()
+
+        # Call the parent class's save method to handle the database saving
+        super().save(*args, **kwargs)
+    
+    def populate_order_cart_products(self):
+        """
+        Builds a dictionary from the CartProduct items in the connected cart.
+        Store the product's id and its quantity. Format = { 1:2, 2:1 }, where Product1 has a quantity of 2,
+        and Product2 has a quantity of 1.
+        """
+        cart = self.cart
+        if cart:
+            cart_products = cart.cartProducts.all()
+            products_dict = {
+                cart_product.product.pk: cart_product.quantity
+                for cart_product in cart_products
+            }
+            self.cart_products = products_dict
+            
+        

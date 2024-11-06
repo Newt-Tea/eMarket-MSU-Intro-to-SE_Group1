@@ -7,19 +7,28 @@
   <link rel="stylesheet" href="{% static 'app/product_list.css' %}">
   <title>Product List</title>
 </head>
-</html>
 <body>
   <header>
     <nav>
       <ul>
         <li><a href="{% url 'shopping_cart' %}">Shopping Cart</a></li>
         <li><a href="{% url 'order_history' %}">View Order History</a></li>
-        <li><a href="{% url 'logout' %}">Logout</a></li>
+        <li>
+          <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display: none;">
+            {% csrf_token %}
+          </form>
+          <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+        </li>
       </ul>
     </nav>
   </header>
   <main>
     <h1>Product List</h1>
+    <form method="GET" action="{% url 'product_list' %}">
+      {{ form.search_query }}
+      {{ form.sort }}
+      <button type="submit">Search & Sort</button>
+    </form>
     <ul>
       {% for product in products %}
         <li>
@@ -33,3 +42,4 @@
     </ul>
   </main>
 </body>
+</html>
