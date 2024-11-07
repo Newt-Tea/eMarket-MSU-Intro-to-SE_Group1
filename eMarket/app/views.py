@@ -256,7 +256,7 @@ def admin_dashboard(request):
 @login_required
 def create_product(request):
     if request.method == 'POST':
-        form = ProductCreationForm(request.POST)
+        form = ProductCreationForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
             product.seller = request.user
