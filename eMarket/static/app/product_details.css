@@ -6,8 +6,10 @@ body {
             background-color: #f4f4f4;
         }
         header {
+            background: #007BFF;
+            color: white;
+            padding: 10px 20px;
             text-align: center;
-            margin-bottom: 20px;
         }
         .product-detail {
             background: white;
