@@ -8,10 +8,18 @@ header{
 	background: #007BFF;
 	color: white;
 	padding: 10px 20px;
+	text-align: center;
+}
+.project-name {
+	font-size: 2em;
+	font-weight: bold;
+	margin-bottom: 10px;
+	text-align: center; /* Center the project name */
 }
 nav ul{
 	list-style-type: none;
 	padding: 0;
+	margin: 0; /* Add this line to remove default margin */
 }
 nav ul li{
 	display: inline;

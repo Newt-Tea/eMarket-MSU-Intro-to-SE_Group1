@@ -9,6 +9,7 @@
 </head>
 <body>
     <header>
+        <div class="project-name">eMarket</div>
         <h1>{{ product.name }}</h1>
     </header>
     <main>
@@ -17,7 +18,9 @@
                 <h2>{{ product.name }}</h2>
                 <p>{{ product.description }}</p>
                 <p>Price: ${{ product.price }}</p>
-                <p>Category: {{ product.category.name }}</p>
+                <p>In Stock: {{ product.stock }}</p>
+                <p>Seller: {{ product.seller.username }}</p>
+               
                 <form action="{% url 'add_to_cart' product.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit">Add to Cart</button>

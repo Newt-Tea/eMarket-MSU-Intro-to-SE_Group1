@@ -8,14 +8,6 @@
     <title>Order History</title>
 </head>
 <body>
-    <header>
-        <nav>
-          <ul>
-            <li><a href="{% url 'shopping_cart' %}">Shopping Cart</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
-          </ul>
-        </nav>
-      </header>
     <h1>Order History</h1>
     <ul>
         {% for order in orders %}
