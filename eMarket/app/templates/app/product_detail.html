@@ -16,6 +16,7 @@
         <div class="product-detail">
             <div class="product-info">
                 <h2>{{ product.name }}</h2>
+                <img src="{{ product.image.url }}">
                 <p>{{ product.description }}</p>
                 <p>Price: ${{ product.price }}</p>
                 <p>In Stock: {{ product.stock }}</p>

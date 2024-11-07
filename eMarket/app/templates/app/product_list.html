@@ -25,8 +25,7 @@
   </header>
   <main>
     <h1>Product List</h1>
-    <form method="GET" action="{% url 'product_list' %}">
-      {{ form.search_query }}
+    <form method="GET" action="{% url 'product_list' %}" enctype=”multipart/form-data”>      {{ form.search_query }}
       {{ form.sort }}
       <button type="submit">Search & Sort</button>
     </form>
@@ -34,6 +33,7 @@
       {% for product in products %}
         <li>
           <h2>{{ product.name }}</h2>
+          <img src="{{ product.image.url }}">
           <p>{{ product.description }}</p>
           <p>Price: ${{ product.price }}</p>
           <p>In Stock: {{ product.stock }}</p>
