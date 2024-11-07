@@ -17,7 +17,7 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=1)
     date_created = models.DateTimeField(null=True,auto_now_add=True)
     seller = models.ForeignKey(User, on_delete=models.CASCADE, null=True, limit_choices_to={'user_type': 'seller'}, related_name='products')
-
+    image = models.ImageField(default="default.jpeg", upload_to="media/", blank=True)
     def __str__(self):
         return self.name
 
