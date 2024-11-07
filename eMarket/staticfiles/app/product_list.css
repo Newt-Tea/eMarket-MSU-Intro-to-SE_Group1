@@ -16,6 +16,9 @@ header{
 	margin-bottom: 10px;
 	text-align: center; /* Center the project name */
 }
+nav {
+	text-align: right; /* Align navigation to the right */
+}
 nav ul{
 	list-style-type: none;
 	padding: 0;
