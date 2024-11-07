@@ -93,7 +93,7 @@ def register(request):
 # Shopping Cart Page
 @login_required
 def shopping_cart(request):
-  cart = Cart.objects.get(user=request.user)
+  cart, created = Cart.objects.get_or_create(user=request.user)
   cartProducts = cart.cartProducts.all()
   total = 0
   for item in cartProducts:
