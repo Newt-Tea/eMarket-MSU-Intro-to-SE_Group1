@@ -1,4 +1,5 @@
-from django.db import models, transaction
+from django.db import models
+from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
@@ -12,7 +13,7 @@ class User(AbstractUser):
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    price = models.DecimalField(decimal_places=2, max_digits=10,default=0)
+    price = models.DecimalField(decimal_places=2, max_digits=10,default=0, validators=[MinValueValidator(0, message='Please enter a valid price.')],)
     stock = models.PositiveIntegerField(default=1)
     date_created = models.DateTimeField(null=True,auto_now_add=True)
     seller = models.ForeignKey(User, on_delete=models.CASCADE, null=True, limit_choices_to={'user_type': 'seller'}, related_name='products')
