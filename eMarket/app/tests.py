@@ -74,6 +74,7 @@ class testCart(TestCase):
         self.assertIsNotNone(self.cart, "Cart for 'buyerUser' should exist.")
         
     def test_cart_deletion(self):
+        print("\nTest: test_cart_deletion")
         self.cart.delete()
         self.assertFalse(Cart.objects.filter(user=self.user).exists())
 
@@ -86,8 +87,8 @@ class testCartProduct(TestCase):
         self.user2 = User.objects.create_user(username='buyerUser2', password='buyerPass2', user_type='buyer')
         self.cart1 = Cart.objects.create(user=self.user1)
         self.cart2 = Cart.objects.create(user=self.user2)
-        self.product1 = Product.objects.create(name="Phone", price=100)
-        self.product2 = Product.objects.create(name="Book", price=10)
+        self.product1 = Product.objects.create(name="Phone", price=100.00)
+        self.product2 = Product.objects.create(name="Book", price=10.00)
 
         # Create CartProduct entries
         self.cartProduct1 = CartProduct.objects.create(cart=self.cart1, product=self.product1)
@@ -142,8 +143,8 @@ class testOrder(TestCase):
         self.product2 = Product.objects.create(name="Book", price=20)
         
         # Create CartProduct entries
-        CartProduct.objects.create(cart=self.cart, product=self.product1, quantity=2)
-        CartProduct.objects.create(cart=self.cart, product=self.product2, quantity=1)
+        self.cartProduct1 = CartProduct.objects.create(cart=self.cart, product=self.product1, quantity=2)
+        self.cartProduct2 = CartProduct.objects.create(cart=self.cart, product=self.product2, quantity=1)
 
     def test_Order_creation_with_cart(self):
         print("\nTest: test_Order_creation_with_cart")
@@ -155,8 +156,18 @@ class testOrder(TestCase):
 
         # Verify that cart_products field is populated based on CartProduct items
         expected_cart_products = {
-            self.product1.pk: 2,
-            self.product2.pk: 1
+            self.product1.pk: {
+                'name': self.product1.name,
+                'price': f"{float(self.product1.price):.2f}",
+                'quantity': str(self.cartProduct1.quantity),
+                'seller': self.product1.seller.username if self.product1.seller else None,
+            },
+            self.product2.pk: {
+                'name': self.product2.name,
+                'price': f"{float(self.product2.price):.2f}",
+                'quantity': str(self.cartProduct2.quantity),
+                'seller': self.product2.seller.username if self.product2.seller else None,
+            },
         }
         self.assertEqual(order.cart_products, expected_cart_products, "Order's cart_products field should match the cart's items.")
 
@@ -173,9 +184,20 @@ class testOrder(TestCase):
 
         # Verify that cart_products field is populated from CartProduct items in the associated cart
         expected_cart_products = {
-            self.product1.pk: 2,
-            self.product2.pk: 1
+            self.product1.pk: {
+                'name': self.product1.name,
+                'price': f"{float(self.product1.price):.2f}",  # Format to match stored format
+                'quantity': str(self.cartProduct1.quantity),
+                'seller': self.product1.seller.username if self.product1.seller else None,
+            },
+            self.product2.pk: {
+                'name': self.product2.name,
+                'price': f"{float(self.product2.price):.2f}",  # Format to match stored format
+                'quantity': str(self.cartProduct2.quantity),
+                'seller': self.product2.seller.username if self.product2.seller else None,
+            },
         }
+        
         self.assertEqual(order.cart_products, expected_cart_products, "Order's cart_products field should auto-populate from CartProduct items.")
 
     def test_Order_without_cart(self):
