@@ -13,10 +13,13 @@
         {% for order in orders %}
             <li>
                 <a href="{% url 'order_detail' order.id %}">
-                Order #{{ order.user_order_id }}</a> - {{ order.date }} - ${{ order.total }} - {{order.status}} 
+                Order #{{ order.user_order_id }}</a> - {{ order.date }} - ${{ order.total }} - {{order.status}}
+                {% if order.status != 'Returned' %}
+                 - <a href="{% url 'order_return' order.id %}">Return</a>
+                {% endif %}
             </li>
         {% empty %}
-            <li>You have no orders.</li>
+            <li class="no-orders">You have no orders.</li>
         {% endfor %}
     </ul>
     <footer>

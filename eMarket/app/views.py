@@ -146,23 +146,23 @@ def cart_checkout(request):
   cartProducts = cart.cartProducts.all()
   total = 0
   quantity = 0
+  deletedProducts = []
   for item in cartProducts:
     product = Product.objects.get(pk=item.product.pk)
     total = total + item.get_total()
     quantity = quantity + item.quantity
     product.stock -= item.quantity
     product.save()
-    if product.stock <= 0:
-      product.delete()
-      
-
-  order = Order.objects.create(
+    if product.stock <= 0: deletedProducts.append(product)
+  Order.objects.create(
     user = request.user,
     cart = cart, 
     total = total, 
     quantity = quantity,
     status = 'Confirmed' 
   )
+  for product in deletedProducts:
+    product.delete()
   cart.delete()
 
 # Payment Confirmed Page 
@@ -200,14 +200,39 @@ def add_product(request):
   return render(request, 'app/add_product.html', {'form': form})
 
 # Order History Page
+@login_required
 def order_history(request):
     orders = Order.objects.filter(user=request.user)
     return render(request, 'app/order_history.html', {'orders': orders})
   
 # Order Detail Page
+@login_required
 def order_detail(request, order_id):
     order = Order.objects.get(id=order_id)
     return render(request, 'app/order_detail.html', {'order': order})
+
+# Order Return Page
+@login_required
+def order_return(request, order_id):
+    order = Order.objects.get(pk=order_id)
+    for product_id, product_details in order.cart_products.items():
+      print("Product info: ", product_id, product_details)
+      name = product_details['name']
+      price = float(product_details['price'])
+      quantity = int(product_details['quantity'])
+      seller = User.objects.get(username=product_details['seller'])
+      productObj, created = Product.objects.get_or_create(pk=product_id)
+      if created:
+        productObj.name = name
+        productObj.price = price
+        productObj.stock = quantity
+        productObj.seller = seller
+      else:
+        productObj.stock += int(quantity)
+      productObj.save()
+    order.status = 'Returned'
+    order.save()
+    return render(request, 'app/order_return.html')
 
 # Logout View
 from django.contrib.auth import logout

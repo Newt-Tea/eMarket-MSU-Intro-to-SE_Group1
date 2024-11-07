@@ -17,7 +17,7 @@
         <p><strong>Status:</strong> {{ order.status }}</p>
         <h3>Items:</h3>
         <ul>
-            {% for product_details in order.cart_products.values %}
+            {% for product_id, product_details in order.cart_products.items %}
                 <li>
                     {{ product_details.name }} - Quantity: {{ product_details.quantity }} - Price: ${{ product_details.price }}
                 </li>
