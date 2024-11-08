@@ -29,10 +29,10 @@
   },
   "portsAttributes": {
     "8000": {
-      "label": "Application",
-      "onAutoForward": "openPreview" // Automatically open preview when port is forwarded
+      "label": "Application"
     }
   },
   "forwardPorts": [8000], // Ports to forward
-  "runArgs": ["-e", "DJANGO_DEBUG=True"] // Environment variables
+  "runArgs": ["-e", "DJANGO_DEBUG=True"], // Environment variables
+  "onCreateCommand": "microsoft-edge http://localhost:8000 || echo 'Failed to open browser'"
 }
