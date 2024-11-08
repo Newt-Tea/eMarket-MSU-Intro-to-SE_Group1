@@ -3,6 +3,7 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from .forms import ProductCreationForm, ProductSearchForm
 from .utils import search
+from django.views.decorators.http import require_POST
 
 #Main Product page
 def product_list(request):
@@ -71,12 +72,6 @@ def register(request):
     if form.is_valid():
       user = form.save()
       user.save()
-      # I think there is an error here where the user object is being created twice, so I commented this out
-      # Create the UserProfile and associate it with the user
-      # user_profile = User.objects.create( 
-      #   user = user
-      #   user_type=form.cleaned_data.get('role')
-      # )
       return redirect('registration_success')  # Redirect to success page
     else:
       print(form.errors)  # Add this line to print form errors
@@ -213,30 +208,36 @@ def order_detail(request, order_id):
 
 # Order Return Page
 @login_required
+@require_POST
 def order_return(request, order_id):
-    order = Order.objects.get(pk=order_id)
+    order = get_object_or_404(Order, pk=order_id)
     for product_id, product_details in order.cart_products.items():
-      print("Product info: ", product_id, product_details)
-      name = product_details['name']
-      price = float(product_details['price'])
-      quantity = int(product_details['quantity'])
-      seller = User.objects.get(username=product_details['seller'])
-      productObj, created = Product.objects.get_or_create(pk=product_id)
-      if created:
-        productObj.name = name
-        productObj.price = price
-        productObj.stock = quantity
-        productObj.seller = seller
-      else:
-        productObj.stock += int(quantity)
-      productObj.save()
+        print("Product info: ", product_id, product_details)
+        name = product_details['name']
+        price = float(product_details['price'])
+        quantity = int(product_details['quantity'])
+        seller = User.objects.get(username=product_details['seller'])
+        productObj, created = Product.objects.get_or_create(pk=product_id)
+        if created:
+            productObj.name = name
+            productObj.price = price
+            productObj.stock = quantity
+            productObj.seller = seller
+        else:
+            productObj.stock += int(quantity)
+        productObj.save()
     order.status = 'Returned'
     order.save()
+    return redirect('order_return_success')
+
+# Order Return Success Page
+@login_required
+def order_return_success(request):
     return render(request, 'app/order_return.html')
 
 # Logout View
 from django.contrib.auth import logout
-from django.views.decorators.http import require_POST 
+
 
 @require_POST
 def logout_view(request):
