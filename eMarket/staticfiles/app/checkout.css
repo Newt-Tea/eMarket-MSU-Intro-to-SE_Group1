@@ -1,50 +1,55 @@
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: white;
-    padding: 50px;
-  }
+body {
+  font-family: Arial, sans-serif;
+  background-color: white;
+  padding: 50px;
+}
 
-  h2 {
-    text-align: center;
-    color: #333;
-  }
+header {
+  background: #007BFF;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+}
 
-  form {
-    max-width: 500px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
+h2 {
+  text-align: center;
+  color: #333;
+}
 
-  p {
-    font-size: 1.2em;
-  }
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-  button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 100%;
-  }
+p {
+  font-size: 1.2em;
+}
 
-  button:hover {
-    background-color: #0056b3;
-  }
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 100%;
+}
 
-  a {
-    text-decoration: none;
-    color: #007bff;
-    font-size: 1em;
-  }
+button:hover {
+  background-color: #0056b3;
+}
 
-  a:hover {
-    text-decoration: underline;
-  }
-</style>
+a {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 1em;
+}
+
+a:hover {
+  text-decoration: underline;
+}
