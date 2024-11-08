@@ -19,11 +19,12 @@
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
         "ms-python.debugpy",
-        "github.copilot"// Added extensions for better development experience
+        "github.copilot" // Added extensions for better development experience
       ],
       "settings": {
         "python.analysis.typeCheckingMode": "basic",
-        "python.analysis.autoImportCompletions": true
+        "python.analysis.autoImportCompletions": true,
+        "terminal.integrated.shell.linux": "/usr/bin/fish" // Set the shell to fish
       }
     }
   },
