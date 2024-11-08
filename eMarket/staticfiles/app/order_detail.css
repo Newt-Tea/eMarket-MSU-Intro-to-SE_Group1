@@ -1,8 +1,17 @@
-/* General Reset and Body Styles */
+/* General Reset and Body Styles 
+ This may need to be removed if product_detail experiences performance issues
+*/ 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+header {
+    background: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
 }
 
 body {

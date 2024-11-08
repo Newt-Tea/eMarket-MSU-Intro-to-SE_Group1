@@ -1,13 +1,19 @@
-
 body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 50px;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-	  }
+	font-family: Arial, sans-serif;
+	text-align: center;
+	margin: 50px;
+	padding: 20px;
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	}
+
+header {
+	background: #007BFF;
+	color: white;
+	padding: 10px 20px;
+	text-align: center;
+}
 h2{
 	color: #333;
 }

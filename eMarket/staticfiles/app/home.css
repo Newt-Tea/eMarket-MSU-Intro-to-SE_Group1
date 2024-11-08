@@ -5,9 +5,9 @@ body {
     padding: 0;
 }
 header {
-    background-color: #007bff;
+    background: #007BFF;
     color: white;
-    padding: 20px;
+    padding: 10px 20px;
     text-align: center;
 }
 main {

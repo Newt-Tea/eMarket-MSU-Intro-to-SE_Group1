@@ -10,6 +10,13 @@ body{
     margin: 0;
 }
 
+header {
+    background: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
 h2{
     margin-bottom: 20px;
     color: #444;

@@ -9,6 +9,13 @@ body {
     font-family: Arial, sans-serif;
 }
 
+header {
+    background: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
 /* Card styling */
 .body_contents {
     background-color: white;

@@ -22,7 +22,7 @@ nav {
 nav ul{
 	list-style-type: none;
 	padding: 0;
-	margin: 0; /* Add this line to remove default margin */
+	margin: 0;
 }
 nav ul li{
 	display: inline;
@@ -45,9 +45,10 @@ main{
 h1{
 	color: #333;
 }
-ul.product-list{
+main ul{
 	list-style-type: none;
 	padding: 0;
+	margin: 0; 
 }
 li{
 	background: white;
@@ -63,7 +64,41 @@ h2 {
 p {
 	margin: 5px 0;
 }
-a.view-details {
-	color: #007BFF;
-	font-weight: bold;
+
+
+.product-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.product-image {
+  max-width: 150px;
+  margin-right: 20px;
+}
+
+.product-info {
+  flex: 1;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 5px 0;
+  font-size: 1em;
+  color: white;
+  background-color: #007BFF;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.button:visited {
+  color: white;
 }
