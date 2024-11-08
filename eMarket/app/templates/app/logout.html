@@ -11,12 +11,14 @@
   <header>
     <div class="project-name">eMarket</div>
   </header>
-  <h2>Logout</h2>
-    <p> You are now Logged out!</p>
-    <a href="{% url 'home' %}">Home Page</a>
-
-  {% if error %}
-    <p style="color:red;">{{ error }}</p>
-  {% endif %}
+  <div class="body_contents">
+    <div class="banner">
+      <h1>Logout</h1>
+    </div>
+    <p>You are now logged out!</p>
+    <footer>
+      <a href="{% url 'home' %}" class="button">Home Page</a>
+    </footer>
+  </div>
 </body>
 </html>
