@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-imb&cpk2vc^)=3h(+7y@)+!26@ttjk+z)dzz5gr%75wfoa8p@i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# I
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') != 'False'
 
 ALLOWED_HOSTS = ['newttea.pythonanywhere.com', 
                  '127.0.0.1'
