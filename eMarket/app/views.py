@@ -104,17 +104,20 @@ def add_to_cart(request, product_id):
   if not cartProduct_created: cartProduct.quantity += 1; cartProduct.save() # FIXME: quantity += 1 needs to be changed when multiple-item addition is added
   return redirect('shopping_cart')
 
-# Remove an item from user's cart
-def remove_from_cart(request, product_id):
-  cart = get_object_or_404(Cart, user=request.user)
-  product = get_object_or_404(Product, pk=product_id)
-  cartProduct = get_object_or_404(CartProduct, cart=cart, product=product)
-  cartProduct.quantity -= 1
-  if cartProduct.quantity <= 0:
-    cartProduct.delete()
-  else:
-    cartProduct.save()
-  return redirect('shopping_cart')
+# Update the quantity of an item in the cart
+@login_required
+@require_POST
+def update_cart_quantity(request, product_id):
+    cart = get_object_or_404(Cart, user=request.user)
+    product = get_object_or_404(Product, pk=product_id)
+    cartProduct = get_object_or_404(CartProduct, cart=cart, product=product)
+    quantity = int(request.POST.get('quantity', 1))
+    if quantity > 0:
+        cartProduct.quantity = quantity
+        cartProduct.save()
+    else:
+        cartProduct.delete()
+    return redirect('shopping_cart')
 
 # Payment on the Checkout page
 from .forms import PaymentForm

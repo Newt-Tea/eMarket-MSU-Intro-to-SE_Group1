@@ -83,3 +83,10 @@ footer {
     text-align: center;
     margin-top: 20px;
 }
+
+/* Add styles for the quantity input and update button */
+input[type="number"] {
+    width: 50px;
+    padding: 5px;
+    margin-right: 10px;
+}

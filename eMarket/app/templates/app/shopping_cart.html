@@ -19,10 +19,14 @@
                     <div class="container">
                         <div class="cart-info">
                             <h2>{{ item.product.name }}</h2>
-                            <p>Quantity: {{ item.quantity }}</p>
+                            <form method="post" action="{% url 'update_cart_quantity' item.product.id %}">
+                                {% csrf_token %}
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0">
+                                <button type="submit" class="button">Update</button>
+                            </form>
                             <p>Total: ${{ item.get_total }}</p>
                         </div>
-                        <a href="{% url 'remove_from_cart' item.product_id %}" class="button">Remove one from cart</a>
                     </div>
                 </li>
             {% empty %}
