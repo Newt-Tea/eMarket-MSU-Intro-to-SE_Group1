@@ -10,7 +10,7 @@
 <body>
     <header>
         <div class="project-name">eMarket</div>
-      </header>
+    </header>
     <h1>Order History</h1>
     <ul>
         {% for order in orders %}
@@ -18,7 +18,10 @@
                 <a href="{% url 'order_detail' order.id %}">
                 Order #{{ order.user_order_id }}</a> - {{ order.date }} - ${{ order.total }} - {{order.status}}
                 {% if order.status != 'Returned' %}
-                 - <a href="{% url 'order_return' order.id %}">Return</a>
+                    <form method="post" action="{% url 'order_return' order.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="button">Return</button>
+                    </form>
                 {% endif %}
             </li>
         {% empty %}
