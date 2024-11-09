@@ -67,7 +67,7 @@ class Order(models.Model):
         """
         cart = self.cart
         if cart:
-            cart_products = cart.cartProducts.all()
+            cart_products = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
             products_dict = {
                 cart_product.product.pk: {
                     'name': cart_product.product.name,
