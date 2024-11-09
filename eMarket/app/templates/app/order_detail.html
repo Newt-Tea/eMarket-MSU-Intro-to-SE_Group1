@@ -10,7 +10,7 @@
 <body>
     <header>
         <div class="project-name">eMarket</div>
-      </header>
+    </header>
     <h1>Order Detail</h1>
     <div class="order-detail">
         <h2>Order ID: {{ order.user_order_id }}</h2>
@@ -20,7 +20,9 @@
         <ul>
             {% for product_id, product_details in order.cart_products.items %}
                 <li>
-                    {{ product_details.name }} - Quantity: {{ product_details.quantity }} - Price: ${{ product_details.price }}
+                    <a href="{% url 'product_detail' product_id %}">
+                        {{ product_details.name }} - Quantity: {{ product_details.quantity }} - Price: ${{ product_details.price }}
+                    </a> 
                 </li>
             {% empty %}
                 <li>No items found in this order.</li>
