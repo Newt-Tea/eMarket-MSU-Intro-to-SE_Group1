@@ -20,13 +20,24 @@
     <h2>Your Products</h2>
     <ul>
         {% for product in products %}
-            <li>{{ product.name }} - In Stock:{{product.stock}} - <a href="{% url 'remove_product' product.id %}">Remove</a></li>
+            <li>
+                {{ product.name }} - In Stock: {{ product.stock }}
+                <form method="POST" action="{% url 'update_stock' product.id %}">
+                    {% csrf_token %}
+                    <label for="stock">Stock:</label>
+                    <input type="number" name="stock" value="{{ product.stock }}" min="0">
+                    <button type="submit">Update Stock</button>
+                </form>
+                <a href="{% url 'remove_product' product.id %}">Remove</a>
+            </li>
         {% endfor %}
     </ul>
     <h2>Your Orders</h2>
     <ul>
-        {% for cart_product in order.cart.cartProducts.all %}
-            <li>{{cart_product.product.name }} - {{cart_product.quantity}} - {{ order.user.username }} - {{ order.status }}</li>
+        {% for order in orders %}
+            {% for cart_product in order.cart.cartProducts.all %}
+                <li>{{ cart_product.product.name }} - {{ cart_product.quantity }} - {{ order.user.username }} - {{ order.status }}</li>
+            {% endfor %}
         {% endfor %}
     </ul>
 </body>

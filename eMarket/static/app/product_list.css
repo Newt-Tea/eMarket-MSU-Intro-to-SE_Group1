@@ -49,13 +49,17 @@ main ul{
 	list-style-type: none;
 	padding: 0;
 	margin: 0; 
+	display: flex;
+	flex-wrap: wrap;
 }
 li{
 	background: white;
-	margin: 10px 0;
+	margin: 10px;
 	padding: 15px;
 	border-radius: 5px;
 	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	flex: 1 1 calc(33.333% - 20px); /* Adjust the percentage to control the number of items per row */
+	box-sizing: border-box;
 }
 h2 {
       margin: 0;

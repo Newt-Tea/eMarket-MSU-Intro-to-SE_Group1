@@ -22,7 +22,7 @@
                             <form method="post" action="{% url 'update_cart_quantity' item.product.id %}">
                                 {% csrf_token %}
                                 <label for="quantity">Quantity:</label>
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0">
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
                                 <button type="submit" class="button">Update</button>
                             </form>
                             <p>Total: ${{ item.get_total }}</p>

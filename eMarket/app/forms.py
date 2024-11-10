@@ -18,6 +18,11 @@ class ProductCreationForm(ModelForm):
             'price' : 'Price $',
             'stock' : 'Stock'
             }
+
+class UpdateStockForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['stock']
         
 class PaymentForm(forms.Form):
     card_number = forms.CharField(max_length = 16, label='Card Number')

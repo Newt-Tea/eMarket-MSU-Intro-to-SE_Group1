@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import *
 from django.contrib.auth.decorators import login_required
-from .forms import ProductCreationForm, ProductSearchForm
+from .forms import ProductCreationForm, ProductSearchForm, UpdateStockForm
 from .utils import search
 from django.views.decorators.http import require_POST
 
@@ -89,7 +89,7 @@ def register(request):
 @login_required
 def shopping_cart(request):
   cart, created = Cart.objects.get_or_create(user=request.user)
-  cartProducts = cart.cartProducts.all()
+  cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
   total = 0
   for item in cartProducts:
     total = total + item.get_total()
@@ -132,7 +132,7 @@ def checkout(request):
 
   # for display of total
     cart = Cart.objects.get(user=request.user)
-    cartProducts = cart.cartProducts.all()
+    cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
     total = 0
     for item in cartProducts:
       total = total + item.get_total()
@@ -141,7 +141,7 @@ def checkout(request):
 # Save total and create an order    
 def cart_checkout(request):
   cart = Cart.objects.get(user=request.user)
-  cartProducts = cart.cartProducts.all()
+  cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
   total = 0
   quantity = 0
   deletedProducts = []
@@ -197,6 +197,42 @@ def add_product(request):
   
   return render(request, 'app/add_product.html', {'form': form})
 
+@login_required
+def seller_dashboard(request):
+    products = Product.objects.filter(seller=request.user).distinct()
+    orders = Order.objects.filter(cart__cartProducts__product__seller=request.user).distinct()
+    return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
+  
+@login_required
+def update_stock(request, product_id):
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    if request.method == 'POST':
+        form = UpdateStockForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('seller_dashboard')
+    else:
+        form = UpdateStockForm(instance=product)
+    return render(request, 'app/update_stock.html', {'form': form, 'product': product})
+
+@login_required
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.seller = request.user
+            product.save()
+            return redirect('seller_dashboard')
+    else:
+        form = ProductCreationForm()
+    return render(request, 'app/create_product.html', {'form': form})
+
+@login_required
+def remove_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    product.delete()
+    return redirect('seller_dashboard')
 # Order History Page
 @login_required
 def order_history(request):
@@ -214,7 +250,7 @@ def order_detail(request, order_id):
 @require_POST
 def order_return(request, order_id):
     order = get_object_or_404(Order, pk=order_id)
-    for product_id, product_details in order.cart_products.items():
+    for product_id, product_details in order.cart_products.items(): # type: ignore #
         print("Product info: ", product_id, product_details)
         name = product_details['name']
         price = float(product_details['price'])
@@ -247,34 +283,11 @@ def logout_view(request):
   logout(request)
   return render(request, 'app/logout.html')
 
-@login_required
-def seller_dashboard(request):
-    products = Product.objects.filter(seller=request.user).distinct()
-    orders = Order.objects.filter(cart__cartProducts__product__seller=request.user).distinct()
-    return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
+
 
 @login_required
 def admin_dashboard(request):
   return render(request, 'app/admin_dashboard.html')
-
-@login_required
-def create_product(request):
-    if request.method == 'POST':
-        form = ProductCreationForm(request.POST, request.FILES)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.seller = request.user
-            product.save()
-            return redirect('seller_dashboard')
-    else:
-        form = ProductCreationForm()
-    return render(request, 'app/create_product.html', {'form': form})
-
-@login_required
-def remove_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id, seller=request.user)
-    product.delete()
-    return redirect('seller_dashboard')
 
 def home(request):
   return render(request, 'app/home.html')

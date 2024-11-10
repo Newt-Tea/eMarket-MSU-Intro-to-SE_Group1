@@ -14,7 +14,7 @@ class User(AbstractUser):
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    price = models.DecimalField(decimal_places=2, max_digits=10,default=Decimal(0), validators=[MinValueValidator(0, message='Please enter a valid price.')],)
+    price = models.DecimalField(decimal_places=2, max_digits=10,default=0, validators=[MinValueValidator(0, message='Please enter a valid price.')],) # type: ignore
     stock = models.PositiveIntegerField(default=1)
     date_created = models.DateTimeField(null=True,auto_now_add=True)
     seller = models.ForeignKey(User, on_delete=models.CASCADE, null=True, limit_choices_to={'user_type': 'seller'}, related_name='products')
@@ -39,7 +39,7 @@ class Order(models.Model):
     cart = models.OneToOneField(Cart, on_delete=models.SET_NULL, null=True)
     cart_products = models.JSONField(null=True)
     quantity = models.PositiveIntegerField(default=1)
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal(0))
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0) # type: ignore
     status = models.CharField(max_length = 50, default='Pending')
     date_created = models.DateTimeField(null=True,auto_now_add=True)
     
