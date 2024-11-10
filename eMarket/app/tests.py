@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from .models import *
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from .utils import *
 
 # Test cases for user model
 class testUser(TestCase):
@@ -48,17 +49,114 @@ class testUser(TestCase):
         self.assertTrue(self.sellerUser.check_password('sellerPass'), "Seller user's password should be 'sellerPass'.")
         self.assertTrue(self.anotherAdmin.check_password('password123'), "Another admin user's password should be 'password123'.")
 
-# Test cases for product model
 class testProduct(TestCase):
     def setUp(self):
-        # Create test product and assign to self
-        self.phone = Product.objects.create(name="Phone", price=10)
+        # Create a seller user and a buyer user
+        self.sellerUser = get_user_model().objects.create_user(username='sellerUser', password='sellerPass', user_type='seller')
+        self.buyerUser = get_user_model().objects.create_user(username='buyerUser', password='buyerPass', user_type='buyer')
 
     def test_ProductExists(self):
         print("\nTest: test_ProductExists")
-        # Verify product exists and check price
-        self.assertIsNotNone(self.phone, "Product 'Phone' should exist.")
-        self.assertEqual(self.phone.price, 10, "Product price should be 10.")
+        # Seller creates a product
+        product = Product.objects.create(name="Phone", price=10, seller=self.sellerUser)
+        
+        # Verify product exists and is associated with the seller
+        self.assertIsNotNone(product, "Product 'Phone' should be created by seller.")
+        self.assertEqual(product.seller, self.sellerUser, "Product should be associated with 'sellerUser'.")
+        self.assertEqual(product.price, 10, "Product price should be 10.")
+
+    def test_ProductStock(self):
+        print("\nTest: test_ProductStock")
+        # Create a product and check initial stock
+        product = Product.objects.create(name="Book", price=20, stock=5, seller=self.sellerUser)
+        self.assertEqual(product.stock, 5, "Product 'Book' should have stock of 5.")
+
+    def test_seller_can_create_product(self):
+        print("\nTest: test_seller_can_create_product")
+        # Seller creates a product
+        product = Product.objects.create(name="Laptop", price=1000.00, stock=10, seller=self.sellerUser)
+        
+        # Verify that the product was created and associated with the seller
+        self.assertIsNotNone(product, "Product should be created by seller.")
+        self.assertEqual(product.seller, self.sellerUser, "Product should be associated with 'sellerUser'.")
+        self.assertEqual(product.name, "Laptop", "Product name should be 'Laptop'.")
+        self.assertEqual(product.price, 1000.00, "Product price should be 1000.00.")
+
+    def test_buyer_cannot_create_product(self):
+        print("\nTest: test_buyer_cannot_create_product")
+        # Attempt to create a product with a buyer user
+        with self.assertRaises(ValueError, msg="Only sellers should be able to create products."):
+            Product.objects.create(name="Tablet", price=500.00, stock=5, seller=self.buyerUser)
+
+    def test_ProductDeletion(self):
+        print("\nTest: test_ProductDeletion")
+        # Seller creates and then deletes a product
+        product = Product.objects.create(name="Phone", price=10, seller=self.sellerUser)
+        product.delete()
+        self.assertFalse(Product.objects.filter(name="Phone").exists(), "Product 'Phone' should be deleted.")
+        
+class testProductSearchSort(TestCase):
+    def setUp(self):
+        # Create a seller user and several products
+        self.sellerUser = get_user_model().objects.create_user(username='sellerUser', password='sellerPass', user_type='seller')
+        
+        # Create products with different names and prices
+        self.product1 = Product.objects.create(name="Phone", price=500, seller=self.sellerUser)
+        self.product2 = Product.objects.create(name="Book", price=20, seller=self.sellerUser)
+        self.product3 = Product.objects.create(name="Laptop", price=1000, seller=self.sellerUser)
+        self.product4 = Product.objects.create(name="Tablet", price=200, seller=self.sellerUser)
+
+    def test_search_product_by_name_lcs(self):
+        print("\nTest: test_search_product_by_name_lcs")
+        # Use the search function to find products that match "Phone"
+        product_names = [p.name for p in Product.objects.all()]
+        search_results = search("Phone", product_names)
+        
+        # Verify that the correct product is found by checking the first item in the sorted search results
+        matched_product_index = search_results[0][0] if search_results else None
+        self.assertIsNotNone(matched_product_index, "Search should find at least one matching product.")
+        self.assertEqual(product_names[matched_product_index].lower(), "phone", "Search should return 'Phone' as the most similar match.")
+
+    def test_search_no_results_lcs(self):
+        print("\nTest: test_search_no_results_lcs")
+        # Use the search function to find a non-existent product
+        product_names = [p.name for p in Product.objects.all()]
+        search_results = search("Camera", product_names)
+        
+        # Verify that no products are found
+        self.assertEqual(len(search_results), 0, "Search should return no results for 'Camera'.")
+
+    def test_sort_products_by_price_ascending(self):
+        print("\nTest: test_sort_products_by_price_ascending")
+        # Retrieve products and sort by price in ascending order
+        products = list(Product.objects.all())
+        prices = [product.price for product in products]
+        sort(prices)  # Sort prices in ascending order
+        
+        # Verify that prices are sorted in ascending order
+        self.assertEqual(prices, sorted(prices), "Prices should be sorted in ascending order.")
+
+    def test_sort_products_by_price_descending(self):
+        print("\nTest: test_sort_products_by_price_descending")
+        # Retrieve products and sort by price in descending order
+        products = list(Product.objects.all())
+        prices = [product.price for product in products]
+        sort(prices)
+        prices.reverse()  # Reverse to simulate descending order
+        
+        # Verify that prices are sorted in descending order
+        self.assertEqual(prices, sorted(prices, reverse=True), "Prices should be sorted in descending order.")
+
+    def test_search_multiple_matches_lcs(self):
+        print("\nTest: test_search_multiple_matches_lcs")
+        # Use the search function to find products that partially match "Tab"
+        product_names = [p.name for p in Product.objects.all()]
+        search_results = search("Tab", product_names)
+        
+        # Verify that "Tablet" is the most similar match and appears in the search results
+        matched_product_index = search_results[0][0] if search_results else None
+        self.assertIsNotNone(matched_product_index, "Search should find at least one matching product.")
+        self.assertEqual(product_names[matched_product_index].lower(), "tablet", "Search should return 'Tablet' as the most similar match.")
 
 # Test cases for cart model
 class testCart(TestCase):
@@ -76,7 +174,21 @@ class testCart(TestCase):
     def test_cart_deletion(self):
         print("\nTest: test_cart_deletion")
         self.cart.delete()
-        self.assertFalse(Cart.objects.filter(user=self.user).exists())
+        self.assertFalse(Cart.objects.filter(user=self.user).exists(), "Cart for 'buyerUser' should be deleted.")
+
+    def test_CartUserAssociation(self):
+        print("\nTest: test_CartUserAssociation")
+        # Verify the cart is associated with the correct user
+        self.assertEqual(self.cart.user, self.user, "Cart should be associated with 'buyerUser'.")
+        self.assertNotEqual(self.cart.user, self.sellerUser, "Cart should not be associated with 'sellerUser'.")
+
+    def test_CartCreationNewUser(self):
+        print("\nTest: test_CartCreationNewUser")
+        # Create a new user and cart, then verify it exists
+        new_user = User.objects.create_user(username='newUser', password='newPass', user_type='buyer')
+        new_cart = Cart.objects.create(user=new_user)
+        self.assertIsNotNone(new_cart, "Cart for 'newUser' should exist.")
+        self.assertEqual(new_cart.user, new_user, "New cart should be associated with 'newUser'.")
 
 
 # Test cases for cart product model
@@ -97,7 +209,7 @@ class testCartProduct(TestCase):
         self.cartProduct4 = CartProduct.objects.create(cart=self.cart2, product=self.product2, quantity=5)
     
     def test_CartProductExists(self):
-        print("\nTest: test_CartProductsExists")
+        print("\nTest: test_CartProductExists")
         # Verify all CartProducts exist
         self.assertTrue(CartProduct.objects.filter(cart=self.cart1, product=self.product1).exists(), "CartProduct for 'buyerUser1' and 'Phone' should exist.")
         self.assertTrue(CartProduct.objects.filter(cart=self.cart1, product=self.product2).exists(), "CartProduct for 'buyerUser1' and 'Book' should exist.")
@@ -126,12 +238,26 @@ class testCartProduct(TestCase):
         # Assert remaining CartProducts still exist
         self.assertTrue(CartProduct.objects.filter(cart=self.cart1, product=self.product2).exists(), "CartProduct 'buyerUser1' and 'Book' should still exist.")
         self.assertTrue(CartProduct.objects.filter(cart=self.cart2, product=self.product1).exists(), "CartProduct 'buyerUser2' and 'Phone' should still exist.")
+
+    def test_AddProductToCart(self):
+        print("\nTest: test_AddProductToCart")
+        # Add a new product to a cart
+        new_product = Product.objects.create(name="Tablet", price=300.00)
+        cart_product = CartProduct.objects.create(cart=self.cart1, product=new_product, quantity=3)
         
-        # Assert that carts and products still exist
-        self.assertTrue(Cart.objects.filter(user=self.user1).exists(), "Cart for 'buyerUser1' should still exist.")
-        self.assertTrue(Cart.objects.filter(user=self.user2).exists(), "Cart for 'buyerUser2' should still exist.")
-        self.assertTrue(Product.objects.filter(name='Phone').exists(), "Product 'Phone' should still exist.")
-        self.assertTrue(Product.objects.filter(name='Book').exists(), "Product 'Book' should still exist.")
+        # Verify the product was added with the correct quantity
+        self.assertEqual(cart_product.product, new_product, "New product 'Tablet' should be added to the cart.")
+        self.assertEqual(cart_product.quantity, 3, "Quantity for new product 'Tablet' should be 3.")
+        self.assertTrue(CartProduct.objects.filter(cart=self.cart1, product=new_product).exists(), "CartProduct for 'buyerUser1' and 'Tablet' should exist.")
+
+    def test_UpdateProductQuantityInCart(self):
+        print("\nTest: test_UpdateProductQuantityInCart")
+        # Update the quantity of an existing product in the cart
+        self.cartProduct2.quantity = 15
+        self.cartProduct2.save()
+        
+        # Verify the quantity has been updated
+        self.assertEqual(self.cartProduct2.quantity, 15, "Quantity for CartProduct 'buyerUser1' and 'Book' should be updated to 15.")
 
         
 class testOrder(TestCase):
