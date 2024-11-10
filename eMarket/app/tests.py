@@ -264,3 +264,75 @@ class testView(TestCase):
         response = self.client.get(reverse('registration_success'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/registration_success.html')
+
+# Test cases for returns
+class TestOrderReturn(TestCase):
+    def setUp(self):
+        # Set up a user, products, cart, and an order with cart products
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.product1 = Product.objects.create(name="Phone", price=500, stock=10, seller=self.user)
+        self.product2 = Product.objects.create(name="Book", price=20, stock=5, seller=self.user)
+        self.cart = Cart.objects.create(user=self.user)
+        self.cartProduct1 = CartProduct.objects.create(cart=self.cart, product=self.product1, quantity=2)
+        self.cartProduct2 = CartProduct.objects.create(cart=self.cart, product=self.product2, quantity=1)
+        self.order = Order.objects.create(
+            user=self.user,
+            cart=self.cart,
+            total=1020,
+            cart_products={
+                self.product1.pk: {
+                    "name": self.product1.name,
+                    "price": "500.00",
+                    "quantity": "2",
+                    "seller": self.user.username,
+                },
+                self.product2.pk: {
+                    "name": self.product2.name,
+                    "price": "20.00",
+                    "quantity": "1",
+                    "seller": self.user.username,
+                },
+            },
+            status='Confirmed'
+        )
+
+    def test_return_order_status(self):
+        print("\nTest: test_return_order_status")
+        # Verify that returning an order updates the status to 'Returned'
+        response = self.client.post(reverse('order_return', args=[self.order.id]))
+        self.order.refresh_from_db()
+        self.assertEqual(self.order.status, 'Returned', "Order status should be 'Returned' after return.")
+
+    def test_return_order_stock(self):
+        print("\nTest: test_return_order_stock")
+        # Check that returning an order updates product stock correctly
+        original_stock1 = self.product1.stock
+        original_stock2 = self.product2.stock
+        self.client.post(reverse('order_return', args=[self.order.id]))
+        self.product1.refresh_from_db()
+        self.product2.refresh_from_db()
+        self.assertEqual(self.product1.stock, original_stock1 + 2, "Product1 stock should increase by order quantity.")
+        self.assertEqual(self.product2.stock, original_stock2 + 1, "Product2 stock should increase by order quantity.")
+
+    def test_return_redirect(self):
+        print("\nTest: test_return_redirect")
+        # Confirm redirection to success page after returning an order
+        response = self.client.post(reverse('order_return', args=[self.order.id]))
+        self.assertRedirects(response, reverse('order_return_success'), msg_prefix="Returning an order should redirect to success page.")
+
+    def test_order_in_history(self):
+        print("\nTest: test_order_in_history")
+        # Verify that a returned order appears correctly in order history
+        self.client.post(reverse('order_return', args=[self.order.id]))
+        response = self.client.get(reverse('order_history'))
+        self.assertContains(response, 'Returned', msg_prefix="Returned order should appear with updated status in history.")
+
+    def test_order_detail_after_return(self):
+        print("\nTest: test_order_detail_after_return")
+        # Check that order detail page displays correctly after return
+        self.client.post(reverse('order_return', args=[self.order.id]))
+        response = self.client.get(reverse('order_detail', args=[self.order.id]))
+        self.assertContains(response, 'Returned', msg_prefix="Order detail should display updated status as 'Returned'.")
+        self.assertContains(response, self.product1.name)
+        self.assertContains(response, self.product2.name)
