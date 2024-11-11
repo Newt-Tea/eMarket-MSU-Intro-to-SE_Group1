@@ -9,10 +9,10 @@ from django.core.exceptions import ValidationError
 class testUser(TestCase):
     def setUp(self):
         # Create test users and assign to self for easier access in tests
-        self.adminUser = User.objects.create_superuser(username='adminUser', password='adminPass', user_type='admin')
+        self.adminUser = User.objects.create_superuser(username='adminUser', email='admin@example.com', password='adminPass', user_type='admin')
         self.buyerUser = User.objects.create_user(username='buyerUser', password='buyerPass', user_type='buyer')
         self.sellerUser = User.objects.create_user(username='sellerUser', password='sellerPass', user_type='seller')
-        self.anotherAdmin = User.objects.create_superuser(username='anotherAdmin', password='password123', user_type='admin')
+        self.anotherAdmin = User.objects.create_superuser(username='anotherAdmin', email='anotheradmin@example.com', password='password123', user_type='admin')
 
     def test_Admin(self):
         print("\nTest: test_Admin")
@@ -116,7 +116,7 @@ class testProductSearchSort(TestCase):
         # Verify that the correct product is found by checking the first item in the sorted search results
         matched_product_index = search_results[0][0] if search_results else None
         self.assertIsNotNone(matched_product_index, "Search should find at least one matching product.")
-        self.assertEqual(product_names[matched_product_index].lower(), "phone", "Search should return 'Phone' as the most similar match.")
+        self.assertEqual(product_names[matched_product_index].lower(), "phone", "Search should return 'Phone' as the most similar match.") # type: ignore
 
     def test_search_no_results_lcs(self):
         print("\nTest: test_search_no_results_lcs")
@@ -156,7 +156,7 @@ class testProductSearchSort(TestCase):
         # Verify that "Tablet" is the most similar match and appears in the search results
         matched_product_index = search_results[0][0] if search_results else None
         self.assertIsNotNone(matched_product_index, "Search should find at least one matching product.")
-        self.assertEqual(product_names[matched_product_index].lower(), "tablet", "Search should return 'Tablet' as the most similar match.")
+        self.assertEqual(product_names[matched_product_index].lower(), "tablet", "Search should return 'Tablet' as the most similar match.") # type: ignore
 
 # Test cases for cart model
 class testCart(TestCase):
@@ -426,7 +426,7 @@ class TestOrderReturn(TestCase):
     def test_return_order_status(self):
         print("\nTest: test_return_order_status")
         # Verify that returning an order updates the status to 'Returned'
-        response = self.client.post(reverse('order_return', args=[self.order.id]))
+        response = self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, 'Returned', "Order status should be 'Returned' after return.")
 
@@ -435,7 +435,7 @@ class TestOrderReturn(TestCase):
         # Check that returning an order updates product stock correctly
         original_stock1 = self.product1.stock
         original_stock2 = self.product2.stock
-        self.client.post(reverse('order_return', args=[self.order.id]))
+        self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
         self.product1.refresh_from_db()
         self.product2.refresh_from_db()
         self.assertEqual(self.product1.stock, original_stock1 + 2, "Product1 stock should increase by order quantity.")
@@ -444,21 +444,21 @@ class TestOrderReturn(TestCase):
     def test_return_redirect(self):
         print("\nTest: test_return_redirect")
         # Confirm redirection to success page after returning an order
-        response = self.client.post(reverse('order_return', args=[self.order.id]))
+        response = self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
         self.assertRedirects(response, reverse('order_return_success'), msg_prefix="Returning an order should redirect to success page.")
 
     def test_order_in_history(self):
         print("\nTest: test_order_in_history")
         # Verify that a returned order appears correctly in order history
-        self.client.post(reverse('order_return', args=[self.order.id]))
+        self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
         response = self.client.get(reverse('order_history'))
         self.assertContains(response, 'Returned', msg_prefix="Returned order should appear with updated status in history.")
 
     def test_order_detail_after_return(self):
         print("\nTest: test_order_detail_after_return")
         # Check that order detail page displays correctly after return
-        self.client.post(reverse('order_return', args=[self.order.id]))
-        response = self.client.get(reverse('order_detail', args=[self.order.id]))
+        self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
+        response = self.client.get(reverse('order_detail', args=[self.order.id])) # type: ignore
         self.assertContains(response, 'Returned', msg_prefix="Order detail should display updated status as 'Returned'.")
         self.assertContains(response, self.product1.name)
         self.assertContains(response, self.product2.name)
