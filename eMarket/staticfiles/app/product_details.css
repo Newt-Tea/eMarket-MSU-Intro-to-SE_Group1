@@ -3,6 +3,7 @@ html, body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    max-width: 100vw;
 }
 
 body {
@@ -82,4 +83,11 @@ img {
     width: auto;
     height: auto;
     margin-bottom: 20px;
+}
+
+.description {
+    margin-bottom: 20px;
+    word-wrap: break-word; /* Ensure words are wrapped */
+    max-width: 100vw; /* Constrain the width to the viewport */
+    white-space: pre-wrap; /* Preserve whitespace and wrap text */
 }
