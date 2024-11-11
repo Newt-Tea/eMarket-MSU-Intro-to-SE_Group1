@@ -5,80 +5,130 @@ from .forms import ProductCreationForm, ProductSearchForm, UpdateStockForm
 from .utils import search
 from django.views.decorators.http import require_POST
 
-#Main Product page
+# Main Product page
 def product_list(request):
-  form = ProductSearchForm(request.GET or None)
-  products = list(Product.objects.all())  # Convert queryset to list for sorting
+    """
+    Display the list of products with search and sorting functionality.
 
-  if form.is_valid():
-    search_query = form.cleaned_data.get('search_query')
-    sort_option = form.cleaned_data.get('sort')
+    This view handles the display of products, allowing users to search for
+    products by name and sort them by relevance, price, or name.
 
-    if search_query:
-      search_results = search(search_query.lower(), [product.name.lower() for product in products])
-      products = [products[i[0]] for i in search_results] 
+    Args:
+        request (HttpRequest): The request object containing GET parameters.
 
-    if sort_option =='rel':
-      products = products
-    elif sort_option == 'price_asc':
-      products.sort(key=lambda product: product.price)
-    elif sort_option == 'price_desc':
-      products.sort(key=lambda product: -product.price)
-    elif sort_option == 'name_asc':
-      products.sort(key=lambda product: product.name.lower())
-    elif sort_option == 'name_desc':
-      products.sort(key=lambda product: product.name.lower(), reverse=True)
+    Returns:
+        HttpResponse: The rendered product list page with the search form and products.
+    """
+    form = ProductSearchForm(request.GET or None)
+    products = list(Product.objects.all())  # Convert queryset to list for sorting
 
-  return render(request, 'app/product_list.html', {'form': form, 'products': products})
+    if form.is_valid():
+        search_query = form.cleaned_data.get('search_query')
+        sort_option = form.cleaned_data.get('sort')
+
+        if search_query:
+            search_results = search(search_query.lower(), [product.name.lower() for product in products])
+            products = [products[i[0]] for i in search_results] 
+
+        if sort_option == 'rel':
+            products = products
+        elif sort_option == 'price_asc':
+            products.sort(key=lambda product: product.price)
+        elif sort_option == 'price_desc':
+            products.sort(key=lambda product: -product.price)
+        elif sort_option == 'name_asc':
+            products.sort(key=lambda product: product.name.lower())
+        elif sort_option == 'name_desc':
+            products.sort(key=lambda product: product.name.lower(), reverse=True)
+
+    return render(request, 'app/product_list.html', {'form': form, 'products': products})
   
   
-#Product Detail Page
+# Product Detail Page
 def product_detail(request, product_id):
+    """
+    Display the details of a specific product.
+
+    This view handles the display of a single product's details based on the
+    provided product ID.
+
+    Args:
+        request (HttpRequest): The request object.
+        product_id (int): The ID of the product to display.
+
+    Returns:
+        HttpResponse: The rendered product detail page with the product information.
+    """
     product = Product.objects.get(id=product_id)
     return render(request, 'app/product_detail.html', {'product': product})
   
-#Add to Cart
+# Add to Cart
 
-#Main Login Page
+# Main Login Page
 from django.contrib.auth import authenticate, login
 
 def login_view(request):
-  if request.method == 'POST':
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
+    """
+    Handle user login.
 
-    if user is not None:
-      login(request, user)
-      user_profile = User.objects.get(username=user.username)
-      # Redirect based on user type
-      if user_profile.user_type == 'admin':
-        return redirect('admin_dashboard')
-      elif user_profile.user_type == 'seller':
-        return redirect('seller_dashboard')
-      else:
-        return redirect('product_list')
-    else:
-      return render(request, 'app/login.html', {'error': 'Invalid credentials'})
+    This view handles the login process for users. It authenticates the user
+    based on the provided username and password, and redirects them to the
+    appropriate dashboard based on their user type.
 
-  return render(request, 'app/login.html')
+    Args:
+        request (HttpRequest): The request object containing POST parameters.
+
+    Returns:
+        HttpResponse: The rendered login page or a redirect to the appropriate dashboard.
+    """
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            user_profile = User.objects.get(username=user.username)
+            # Redirect based on user type
+            if user_profile.user_type == 'admin':
+                return redirect('admin_dashboard')
+            elif user_profile.user_type == 'seller':
+                return redirect('seller_dashboard')
+            else:
+                return redirect('product_list')
+        else:
+            return render(request, 'app/login.html', {'error': 'Invalid credentials'})
+
+    return render(request, 'app/login.html')
 
 # Main Registration Page
 from .forms import RegistrationForm
 
 def register(request):
-  if request.method == 'POST':
-    form = RegistrationForm(request.POST)
-    if form.is_valid():
-      user = form.save()
-      user.save()
-      return redirect('registration_success')  # Redirect to success page
+    """
+    Handle user registration.
+
+    This view handles the registration process for new users. It validates the
+    registration form and saves the new user to the database.
+
+    Args:
+        request (HttpRequest): The request object containing POST parameters.
+
+    Returns:
+        HttpResponse: The rendered registration page or a redirect to the registration success page.
+    """
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.save()
+            return redirect('registration_success')  # Redirect to success page
+        else:
+            print(form.errors)  # Add this line to print form errors
     else:
-      print(form.errors)  # Add this line to print form errors
-  else:
-    form = RegistrationForm()
-  
-  return render(request, 'app/register.html', {'form': form})
+        form = RegistrationForm()
+
+    return render(request, 'app/register.html', {'form': form})
 
 ######################################
 ########### CART FUNCTIONS ###########
