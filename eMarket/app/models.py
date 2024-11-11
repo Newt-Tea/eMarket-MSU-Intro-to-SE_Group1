@@ -5,6 +5,14 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
+    """
+    User model extending Django's AbstractUser.
+    
+    Attributes:
+        USER_TYPE_CHOICES (tuple): Choices for user type.
+        user_type (str): Type of the user (admin, buyer, seller).
+        pending (bool): Indicates if the user's account is pending approval.
+    """
     USER_TYPE_CHOICES = (
         ('admin', 'Admin'),
         ('buyer', 'Buyer'),
@@ -14,6 +22,17 @@ class User(AbstractUser):
     pending = models.BooleanField(default=True)
 
 class Product(models.Model):
+    """
+    Product model representing an item for sale.
+    
+    Attributes:
+        name (str): Name of the product.
+        price (Decimal): Price of the product.
+        stock (int): Stock quantity of the product.
+        date_created (datetime): Date when the product was created.
+        seller (User): The seller of the product.
+        image (ImageField): Image of the product.
+    """
     name = models.CharField(max_length=100)
     price = models.DecimalField(decimal_places=2, max_digits=10,default=0, validators=[MinValueValidator(0, message='Please enter a valid price.')],) # type: ignore
     description = models.CharField(max_length=250, default="")
@@ -21,27 +40,66 @@ class Product(models.Model):
     date_created = models.DateTimeField(null=True,auto_now_add=True)
     seller = models.ForeignKey(User, on_delete=models.CASCADE, null=True, limit_choices_to={'user_type': 'seller'}, related_name='products')
     image = models.ImageField(default="default.jpeg", upload_to="media/", blank=True)
+    
     def __str__(self):
         return self.name
     
     def save(self, *args, **kwargs):
-        # Enforce seller-only restriction
+        """
+        Save method to enforce seller-only restriction.
+        
+        Raises:
+            ValidationError: If the user is not a seller.
+        """
         if self.seller and self.seller.user_type != 'seller':
             raise ValidationError("Only users with a seller account can create products.")
         super().save(*args, **kwargs)
 
 class Cart(models.Model):
+    """
+    Cart model representing a shopping cart.
+    
+    Attributes:
+        user (User): The user who owns the cart.
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'buyer'})
 
-# Through model that defines the relationship between the Product and the Cart
 class CartProduct(models.Model):
+    """
+    Through model defining the relationship between Product and Cart.
+    
+    Attributes:
+        product (Product): The product in the cart.
+        cart (Cart): The cart containing the product.
+        quantity (int): Quantity of the product in the cart.
+    """
     product = models.ForeignKey(Product, on_delete=models.CASCADE) # connects to ONE product
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cartProducts') # connects to ONE cart
     quantity = models.PositiveIntegerField(default=1) # describes the quantity of the connected product
-    def get_total(self): # gets total prices of connected product
+    
+    def get_total(self):
+        """
+        Calculate the total price of the product in the cart.
+        
+        Returns:
+            Decimal: Total price of the product based on quantity.
+        """
         return self.quantity * self.product.price
 
 class Order(models.Model):
+    """
+    Order model representing a user's order.
+    
+    Attributes:
+        user (User): The user who placed the order.
+        user_order_id (int): The order ID specific to the user.
+        cart (Cart): The cart associated with the order.
+        cart_products (dict): The products in the cart at the time of order.
+        quantity (int): The total quantity of products in the order.
+        total (Decimal): The total price of the order.
+        status (str): The status of the order (e.g., Pending, Completed).
+        date_created (datetime): The date and time when the order was created.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     user_order_id = models.PositiveIntegerField(default=1)
     cart = models.OneToOneField(Cart, on_delete=models.SET_NULL, null=True)
