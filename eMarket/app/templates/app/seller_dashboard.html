@@ -35,9 +35,10 @@
     <h2>Your Orders</h2>
     <ul>
         {% for order in orders %}
-            {% for cart_product in order.cart.cartProducts.all %}
-                <li>{{ cart_product.product.name }} - {{ cart_product.quantity }} - {{ order.user.username }} - {{ order.status }}</li>
-            {% endfor %}
+            <li>
+                <a href="{% url 'order_detail' order.id %}" class="button"> Order #{{ order.user_order_id }}</a>
+                    - Total: ${{ order.total }} - Status:{{order.status}} - Bought by: {{order.user}}
+            </li>
         {% endfor %}
     </ul>
 </body>
