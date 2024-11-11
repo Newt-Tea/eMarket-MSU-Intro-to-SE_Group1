@@ -38,22 +38,31 @@ def search(searchInput, productList):
     searchInput = searchInput.lower()  # Ensure the search term is in lowercase
     m = len(searchInput)
     
-    for i in range(len(productList)):
-        product = productList[i].lower()  # Ensure product name is in lowercase
-        n = len(product)
-        
-        # Initialize memoization table for LCS calculation
-        memo = [[-1 for _ in range(n + 1)] for _ in range(m + 1)]
-        
-        # Calculate similarity score using LCS for subsequence
-        similarity = lcs(searchInput, product, m, n, memo)
-        
-        # Set a proportional threshold (e.g., 60% of the search term length)
-        min_similarity_threshold = max(2, int(0.6 * m))
-        
-        # Only include results that meet or exceed the proportional threshold
-        if similarity >= min_similarity_threshold:
-            searchResults.append([i, similarity])
+    # Only proceed if the search input is exactly 1 character
+    if m == 1:
+        for i in range(len(productList)):
+            product = productList[i].lower()  # Ensure product name is in lowercase
+            # Check if the single character exists in the product name
+            if searchInput in product:
+                # If found, add the product index and a score of 1
+                searchResults.append([i, 1])
+    else:
+        for i in range(len(productList)):
+            product = productList[i].lower()  # Ensure product name is in lowercase
+            n = len(product)
+            
+            # Initialize memoization table for LCS calculation
+            memo = [[-1 for _ in range(n + 1)] for _ in range(m + 1)]
+            
+            # Calculate similarity score using LCS for subsequence
+            similarity = lcs(searchInput, product, m, n, memo)
+            
+            # Set a proportional threshold (e.g., 60% of the search term length)
+            min_similarity_threshold = max(2, int(0.6 * m))
+            
+            # Only include results that meet or exceed the proportional threshold
+            if similarity >= min_similarity_threshold:
+                searchResults.append([i, similarity])
     
     # Sort results by similarity score in descending order
     searchResults.sort(key=lambda x: x[1], reverse=True)
