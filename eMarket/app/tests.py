@@ -123,7 +123,6 @@ class testProductSearchSort(TestCase):
         # Use the search function to find a non-existent product
         product_names = [p.name for p in Product.objects.all()]
         search_results = search("Camera", product_names)
-        
         # Verify that no products are found
         self.assertEqual(len(search_results), 0, "Search should return no results for 'Camera'.")
 

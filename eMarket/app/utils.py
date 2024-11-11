@@ -33,29 +33,28 @@ def sort(a,low=0,high=-1):
 
 # Returns a new array weighted by the similarity of the product to the input
 # Array form = [[productIndex,similarity],[productIndex2,similarity2]...]
-def search(searchInput,productList):
+def search(searchInput, productList):
     searchResults = []
-    searchInput = searchInput.lower()
+    searchInput = searchInput.lower()  # Ensure the search term is in lowercase
+    m = len(searchInput)
+    
     for i in range(len(productList)):
-        product = productList[i].lower()
-        m = len(searchInput)
+        product = productList[i].lower()  # Ensure product name is in lowercase
         n = len(product)
-        memo = [[-1 for _ in range(n+1)] for _ in range(m+1)]
-        similarity = lcs(searchInput,product,m,n,memo)
-        if similarity > m: similarity = m # Weird bug I couldn't figure out, caused values > m which would freak out the sorting
-        if similarity >= min(2, n):
-            searchResults.append([i,similarity])
-            for j in range(len(searchResults)-1,0,-1):
-                if searchResults[j-1][1] < searchResults[j][1]: (searchResults[j-1],searchResults[j]) = (searchResults[j],searchResults[j-1])
+        
+        # Initialize memoization table for LCS calculation
+        memo = [[-1 for _ in range(n + 1)] for _ in range(m + 1)]
+        
+        # Calculate similarity score using LCS for subsequence
+        similarity = lcs(searchInput, product, m, n, memo)
+        
+        # Set a proportional threshold (e.g., 60% of the search term length)
+        min_similarity_threshold = max(2, int(0.6 * m))
+        
+        # Only include results that meet or exceed the proportional threshold
+        if similarity >= min_similarity_threshold:
+            searchResults.append([i, similarity])
+    
+    # Sort results by similarity score in descending order
+    searchResults.sort(key=lambda x: x[1], reverse=True)
     return searchResults
-
-
-# Sample list of product names
-product_names = ["Phone", "Book", "Laptop", "Tablet"]
-
-# Example search term
-search_term = "Tab"
-
-# Running the search function from utils.py
-search_results = search(search_term, product_names)
-print("Search results for 'Tab':", search_results)
