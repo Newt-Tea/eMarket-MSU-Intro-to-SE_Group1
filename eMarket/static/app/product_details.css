@@ -48,16 +48,21 @@ p {
     margin: 5px 0;
 }
 
-button {
+button, .button {
     background-color: #007BFF;
     color: white;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s;
 }
 
-button:hover {
+button:hover, .button:hover {
     background-color: #0056b3;
 }
 

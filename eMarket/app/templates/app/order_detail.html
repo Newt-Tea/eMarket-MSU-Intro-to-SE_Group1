@@ -20,7 +20,7 @@
         <ul>
             {% for product_id, product_details in order.cart_products.items %}
                 <li>
-                    <a href="{% url 'product_detail' product_id %}">
+                    <a href="{% url 'product_detail' product_id %} " class="button">
                         {{ product_details.name }} - Quantity: {{ product_details.quantity }} - Price: ${{ product_details.price }}
                     </a> 
                 </li>
@@ -30,6 +30,6 @@
         </ul>
         <p><strong>Total Price:</strong> ${{ order.total }}</p>
     </div>
-    <a href="{% url 'order_history' %}">Back to Order History</a>
+    <a href="{% url 'order_history' %}" class="button">Back to Order History</a>
 </body>
 </html>

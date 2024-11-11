@@ -1,6 +1,3 @@
-/* General Reset and Body Styles 
- This may need to be removed if product_detail experiences performance issues
-*/ 
 * {
     margin: 0;
     padding: 0;
@@ -12,6 +9,7 @@ header {
     color: white;
     padding: 10px 20px;
     text-align: center;
+    width: 100%;
 }
 
 body {
@@ -20,8 +18,8 @@ body {
     color: #333;
     padding: 20px;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     min-height: 100vh;
 }
 
@@ -51,8 +49,8 @@ h3 {
 .order-detail {
     background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
     width: 100%;
     max-width: 800px;
     margin-top: 20px;
@@ -112,10 +110,10 @@ p {
 }
 
 /* Back to Order History Button */
-a {
+a.button {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #3498db;
+    padding: 10px 15px;
+    background-color: #007bff;
     color: white;
     text-decoration: none;
     border-radius: 5px;
@@ -125,14 +123,14 @@ a {
     transition: background-color 0.3s;
 }
 
-a:hover {
-    background-color: #2980b9; /* Darker blue on hover */
+a.button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
 }
 
 /* Responsive Design for Smaller Screens */
 @media (max-width: 768px) {
     .order-detail {
-        padding: 1.5rem;
+        padding: 15px;
     }
 
     h1 {
@@ -151,7 +149,7 @@ a:hover {
         font-size: 0.9rem;
     }
 
-    a {
+    a.button {
         padding: 0.5rem 1rem;
     }
 }
