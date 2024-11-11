@@ -58,3 +58,10 @@ def search(searchInput, productList):
     # Sort results by similarity score in descending order
     searchResults.sort(key=lambda x: x[1], reverse=True)
     return searchResults
+
+product_list = ['abcdefghij']
+search_input = 'abcde'
+
+search_results = search(search_input,product_list)
+
+print(search_results)
