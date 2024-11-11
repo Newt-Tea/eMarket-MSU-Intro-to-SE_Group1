@@ -60,7 +60,7 @@ class ProductAdmin(admin.ModelAdmin):
     # How data is displayed when clicking on Product
     fieldsets = (
         ('Product Information', {
-            'fields': ('name', 'price', 'stock', 'date_created', ),
+            'fields': ('name', 'price','description', 'stock', 'date_created', 'image' ),
         }),
         ('Seller Information', {
             'fields': ('seller', ),
