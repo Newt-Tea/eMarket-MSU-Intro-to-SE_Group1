@@ -1,14 +1,19 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2", // Base image for the dev container
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/wxw-matt/devcontainer-features/apt:latest": {
+      "packages": "vim telnet curl"
+    }
+  },
   "hostRequirements": {
     "cpus": 4 // Minimum CPU requirement
   },
   "waitFor": "onCreateCommand", // Wait before running post-create commands
-  "updateContentCommand": "cd eMarket && pip install -r requirements.txt && python manage.py migrate || echo 'Migration failed'", // Change directory, install dependencies and run migrations
-  "postCreateCommand": "cd eMarket && cp .env.example .env || echo '.env file copy failed'", // Change directory and copy environment variables file
-  "postStartCommand": "cd eMarket && python manage.py collectstatic --noinput || echo 'Collect static failed'", // Change directory and collect static files
+  "updateContentCommand": "sudo apt-get update && sudo apt-get install -y python3 python3-pip fish && cd /workspaces/eMarket-MSU-Intro-to-SE_Group1/eMarket && pip3 install -r requirements.txt && python3 manage.py migrate || echo 'Migration failed'", // Install Python, pip, fish shell, change directory, install dependencies and run migrations
+  "postCreateCommand": "cd /workspaces/eMarket-MSU-Intro-to-SE_Group1/eMarket && cp .env.example .env || echo '.env file copy failed'", // Change directory and copy environment variables file
+  "postStartCommand": "cd /workspaces/eMarket-MSU-Intro-to-SE_Group1/eMarket && python3 manage.py collectstatic --noinput || echo 'Collect static failed'", // Change directory and collect static files
   "postAttachCommand": {
-    "server": "cd eMarket && python manage.py runserver" // Change directory and start the server
+    "server": "cd /workspaces/eMarket-MSU-Intro-to-SE_Group1/eMarket && python3 manage.py runserver" // Change directory and start the server
   },
   "customizations": {
     "vscode": {
@@ -19,20 +24,21 @@
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
         "ms-python.debugpy",
-        "github.copilot"// Added extensions for better development experience
+        "github.copilot" // Added extensions for better development experience
       ],
       "settings": {
         "python.analysis.typeCheckingMode": "basic",
-        "python.analysis.autoImportCompletions": true
+        "python.analysis.autoImportCompletions": true,
+        "terminal.integrated.shell.linux": "/usr/bin/fish" // Set the shell to fish
       }
     }
   },
   "portsAttributes": {
     "8000": {
-      "label": "Application",
-      "onAutoForward": "openPreview" // Automatically open preview when port is forwarded
+      "label": "Application"
     }
   },
   "forwardPorts": [8000], // Ports to forward
-  "runArgs": ["-e", "DJANGO_DEBUG=True"] // Environment variables
+  "runArgs": ["-e", "DJANGO_DEBUG=True"], // Environment variables
+  "onCreateCommand": "microsoft-edge http://localhost:8000 || echo 'Failed to open browser'"
 }

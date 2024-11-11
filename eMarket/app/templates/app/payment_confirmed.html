@@ -3,10 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment Confirmed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/payment_confirmed.css' %}">
 </head>
 <body>
-    <h1>Payment Confirmed</h1>
-    <p>Thank you for your purchase! Your payment has been successfully processed.</p>
-    <a href="{% url 'order_history' %}">View Order History</a>
+    <header>
+        <div class="project-name">eMarket</div>
+    </header>
+    <div class="body_contents">
+        <div class="banner">
+            <h1>Payment Confirmed</h1>
+        </div>
+        <p>Thank you for your purchase! Your payment has been successfully processed.</p>
+        <a href="{% url 'order_history' %}" class="button">View Order History</a>
+    </div>
 </body>
 </html>

@@ -1,32 +1,92 @@
-
+/* Center the .body_contents on the screen */
 body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 50px;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-	  }
-h2{
-	color: #333;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
-p{
-	font-size: 1.2em;
+header {
+    background: #4d0404;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    width: 100%;
 }
 
-a{
+.project-name {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Card styling */
+.body_contents {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+/* Banner styling */
+.banner {
+    background-color: #007BFF;
+    padding: 20px;
+    margin: -20px -20px 20px -20px;
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* Headline styling in the banner */
+.banner h1 {
+    color: white;
+    font-size: 1.8em;
+    margin: 0;
+}
+
+.button {
+	display: inline-block;
+	padding: 10px 20px;
+	margin: 5px 0;
+	font-size: 1em;
+	color: white;
+	background-color: #007BFF;
+	border: none;
+	border-radius: 5px;
+	text-align: center;
 	text-decoration: none;
-	color: #007BFF;
-	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+  }
+
+/* Paragraph styling */
+p {
+    color: #555;
+    font-size: 1em;
+    margin: 15px 0;
 }
 
-a:hover{
-	text-decoration: underline;
+/* Footer link styling */
+footer a {
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 1em;
+    display: inline-block;
+    margin-top: 20px;
+    transition: text-decoration 0.3s ease;
 }
 
-.error{
-	color: red;
-	font-weight: bold;
+footer a:hover {
+    text-decoration: underline;
 }

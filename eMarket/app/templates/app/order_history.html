@@ -9,26 +9,27 @@
 </head>
 <body>
     <header>
-        <nav>
-          <ul>
-            <li><a href="{% url 'shopping_cart' %}">Shopping Cart</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
-          </ul>
-        </nav>
-      </header>
+        <div class="project-name">eMarket</div>
+    </header>
     <h1>Order History</h1>
     <ul>
         {% for order in orders %}
             <li>
-                {% comment %} <a href="{% url 'order_detail' order.id %}"> {% endcomment %}
-                Order #{{ order.id }}</a> - {{ order.date }} - ${{ order.total }} - {{order.status}} 
+                <a href="{% url 'order_detail' order.id %}" class="button">
+                Order #{{ order.user_order_id }}</a> - Total: ${{ order.total }} - Status:{{order.status}}
+                {% if order.status != 'Returned' %}
+                    <form method="post" action="{% url 'order_return' order.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="button">Return</button>
+                    </form>
+                {% endif %}
             </li>
         {% empty %}
-            <li>You have no orders.</li>
+            <li class="no-orders">You have no orders.</li>
         {% endfor %}
     </ul>
-    <footer>
-        <a href="{% url 'product_list' %}">Back to Product List</a>
-    </footer>
+    <div class="back-button-container">
+        <a href="{% url 'product_list' %}" class="button">Back to Product List</a>
+    </div>
 </body>
 </html>

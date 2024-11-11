@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'app/registration_success.css' %}">
   <title>Registration Success</title>
 </head>
 <body>
+  <header>
+    <div class="project-name">eMarket</div>
+  </header>
   <h2>Registration Successful!</h2>
   {% comment %} <p>Your account is awaiting approval by an admin.</p> {% endcomment %}
   <a href="{% url 'login' %}">Login</a>

@@ -16,11 +16,24 @@ class UserAdmin(admin.ModelAdmin):
         ('User Pending', {
             'fields': ('pending', ),
         }),
-        ('Seller Products', {
-            'fields': ('ProductSet', ),
-        }),
     )
+
     readonly_fields = ('password', 'date_joined', 'last_login', 'ProductSet')
+
+    def get_fieldsets(self, request, obj=None):
+        # Get the default fieldsets
+        fieldsets = super().get_fieldsets(request, obj)
+        
+        # Check if the user_type is 'seller' to add the "Seller Products" fieldset
+        if obj.user_type == 'seller': # type: ignore # obj is a User object
+            # Append the Seller Products fieldset
+            fieldsets += (
+                ('Seller Products', {
+                    'fields': ('ProductSet', ),
+                }),
+            )
+        
+        return fieldsets
 
     # How Users are displayed in the list
     list_display = ('username', 'user_type', 'formattedUserID', 'pending')
@@ -50,7 +63,7 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('name', 'price', 'stock', 'date_created', ),
         }),
         ('Seller Information', {
-            'fields': ('seller_username', ),
+            'fields': ('seller', ),
         }),
     )
     readonly_fields = ('date_created', )

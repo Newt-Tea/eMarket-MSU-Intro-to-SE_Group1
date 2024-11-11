@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/create_product.css' %}">
     <title>Create Product</title>
 </head>
 <body>
+    <header>
+        <div class="project-name">eMarket</div>
+    </header>
     <h1>Create Product</h1>
-    <form method="post">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Create</button>

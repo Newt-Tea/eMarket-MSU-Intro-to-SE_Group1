@@ -2,22 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
     <link rel="stylesheet" href="{% static 'app/product_details.css' %}">
     <title>{{ product.name }} - Product Detail</title>
 </head>
 <body>
     <header>
-        <h1>{{ product.name }}</h1>
+        <div class="project-name">eMarket</div>
     </header>
     <main>
         <div class="product-detail">
             <div class="product-info">
-                <h2>{{ product.name }}</h2>
+                <h1>{{ product.name }}</h1>
+                <img src="{{ product.image.url }}">
                 <p>{{ product.description }}</p>
                 <p>Price: ${{ product.price }}</p>
-                <p>Category: {{ product.category.name }}</p>
+                <p>In Stock: {{ product.stock }}</p>
+                <p>Seller: {{ product.seller.username }}</p>
+               
                 <form action="{% url 'add_to_cart' product.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit">Add to Cart</button>
@@ -26,7 +29,7 @@
         </div>
     </main>
     <footer>
-        <a href="{% url 'product_list' %}">Back to Product List</a>
+        <a href="{% url 'product_list' %}" class="button">Back to Product List</a>
     </footer>
 </body>
 </html>

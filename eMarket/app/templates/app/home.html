@@ -8,23 +8,25 @@
     <link rel="stylesheet" href="{% static 'app/home.css' %}">
 </head>
 <body>
-    <header>
-        <h1>Welcome to eMarket</h1>
-    </header>
+  <header>
+    <div class="project-name">eMarket</div>
+  </header>
+  
     <main>
-        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'login' %}" class="button">Login</a>
         <p>An ECommerce website created by four students at Mississippi State University.</p>
         <a href="https://github.com/Newt-Tea/eMarket-MSU-Intro-to-SE_Group1" target="_blank">Visit our GitHub Repository</a>
         <h2>Meet the Team</h2>
-        <ul>
-            <li><a href="https://github.com/Newt-Tea" target="_blank">Hudson Hargrove</a></li>
-            <li><a href="https://github.com/aambrose1" target="_blank">Andrea Ambrose</a></li>
-            <li><a href="https://github.com/LostSpaghetti" target="_blank">Matthew Crosno</a></li>
-            <li><a href="https://github.com/ji256" target="_blank">Jeremiah Ickom</a></li>
-        </ul>
+        <div class="button-container">
+                <a href="https://github.com/Newt-Tea" target="_blank"class="button">Hudson Hargrove</a>
+                <a href="https://github.com/aambrose1" target="_blank"class="button">Andrea Ambrose</a>
+                <a href="https://github.com/LostSpaghetti" target="_blank"class="button">Matthew Crosno</a>
+                <a href="https://github.com/ji256" target="_blank"class="button">Jeremiah Ickom</a>
+            </ul>
+        </div>  
     </main>
     <footer>
-        <p>&copy; 2023 eMarket. All rights reserved.</p>
+        <p>2024 eMarket</p>
     </footer>
 </body>
 </html>

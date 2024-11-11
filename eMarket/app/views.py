@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from .models import Product, Cart, Order, User
+from .models import *
 from django.contrib.auth.decorators import login_required
-from .forms import ProductCreationForm, ProductSearchForm
+from .forms import ProductCreationForm, ProductSearchForm, UpdateStockForm
 from .utils import search
+from django.views.decorators.http import require_POST
 
 #Main Product page
 def product_list(request):
@@ -71,12 +72,6 @@ def register(request):
     if form.is_valid():
       user = form.save()
       user.save()
-      # I think there is an error here where the user object is being created twice, so I commented this out
-      # Create the UserProfile and associate it with the user
-      # user_profile = User.objects.create( 
-      #   user = user
-      #   user_type=form.cleaned_data.get('role')
-      # )
       return redirect('registration_success')  # Redirect to success page
     else:
       print(form.errors)  # Add this line to print form errors
@@ -93,32 +88,36 @@ def register(request):
 # Shopping Cart Page
 @login_required
 def shopping_cart(request):
-  cart_items = Cart.objects.filter(user=request.user)
+  cart, created = Cart.objects.get_or_create(user=request.user)
+  cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
   total = 0
-  for item in cart_items:
+  for item in cartProducts:
     total = total + item.get_total()
-  for cart_item in cart_items:
-    if cart_item.quantity == 0:
-      cart_items.delete()
-  return render(request, 'app/shopping_cart.html', {'cart_items': cart_items, 'total' : total})
+    if item.quantity == 0: item.delete()
+  return render(request, 'app/shopping_cart.html', {'cartProducts': cartProducts, 'total' : total})
 
 # Add an item to user's cart
 def add_to_cart(request, product_id):
   product = Product.objects.get(id=product_id)
-  cart_item, cart_created = Cart.objects.get_or_create(user=request.user, product=product)
-  cart_item.quantity += 1
-  cart_item.save()
+  cart, cart_created = Cart.objects.get_or_create(user=request.user)
+  cartProduct, cartProduct_created = CartProduct.objects.get_or_create(cart=cart,product=product)
+  if not cartProduct_created: cartProduct.quantity += 1; cartProduct.save() # FIXME: quantity += 1 needs to be changed when multiple-item addition is added
   return redirect('shopping_cart')
 
-# Remove an item from user's cart
-def remove_from_cart(request, product_id):
-  cart_item = get_object_or_404(Cart, user=request.user, product_id=product_id)
-  cart_item.quantity -= 1
-  if cart_item.quantity == 0:
-    cart_item.delete()
-  else:
-    cart_item.save()
-  return redirect('shopping_cart')
+# Update the quantity of an item in the cart
+@login_required
+@require_POST
+def update_cart_quantity(request, product_id):
+    cart = get_object_or_404(Cart, user=request.user)
+    product = get_object_or_404(Product, pk=product_id)
+    cartProduct = get_object_or_404(CartProduct, cart=cart, product=product)
+    quantity = int(request.POST.get('quantity', 1))
+    if quantity > 0:
+        cartProduct.quantity = quantity
+        cartProduct.save()
+    else:
+        cartProduct.delete()
+    return redirect('shopping_cart')
 
 # Payment on the Checkout page
 from .forms import PaymentForm
@@ -132,26 +131,36 @@ def checkout(request):
     form = PaymentForm()
 
   # for display of total
-    cart_items = Cart.objects.filter(user=request.user)
+    cart = Cart.objects.get(user=request.user)
+    cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
     total = 0
-    for item in cart_items:
+    for item in cartProducts:
       total = total + item.get_total()
   return render(request, 'app/checkout.html', {'form': form, 'total' : total})
 
 # Save total and create an order    
 def cart_checkout(request):
-  cart = Cart.objects.filter(user=request.user)
-  total = sum(cart_item.get_total() for cart_item in cart)
-  quantity = sum(cart_item.quantity for cart_item in cart)
-
-  order = Order.objects.create(
-    user = request.user, 
+  cart = Cart.objects.get(user=request.user)
+  cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
+  total = 0
+  quantity = 0
+  deletedProducts = []
+  for item in cartProducts:
+    product = Product.objects.get(pk=item.product.pk)
+    total = total + item.get_total()
+    quantity = quantity + item.quantity
+    product.stock -= item.quantity
+    product.save()
+    if product.stock <= 0: deletedProducts.append(product)
+  Order.objects.create(
+    user = request.user,
+    cart = cart, 
     total = total, 
     quantity = quantity,
     status = 'Confirmed' 
-    )
-  order.cart.set(cart)
-  order.save()
+  )
+  for product in deletedProducts:
+    product.delete()
   cart.delete()
 
 # Payment Confirmed Page 
@@ -188,35 +197,28 @@ def add_product(request):
   
   return render(request, 'app/add_product.html', {'form': form})
 
-# Order History Page
-def order_history(request):
-    orders = Order.objects.filter(user=request.user)
-    return render(request, 'app/order_history.html', {'orders': orders})
-  
-# Order Detail Page
-def order_detail(request, order_id):
-    order = Order.objects.get(id=order_id)
-    return render(request, 'app/order_detail.html', {'order': order})
-
-# Logout View
-from django.contrib.auth import logout
-from django.views.decorators.http import require_POST 
-
-@require_POST
-def logout_view(request):
-  logout(request)
-  return render(request, 'app/logout.html')
-
 @login_required
 def seller_dashboard(request):
     products = Product.objects.filter(seller=request.user).distinct()
     orders = Order.objects.filter(cart__cartProducts__product__seller=request.user).distinct()
     return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
+  
+@login_required
+def update_stock(request, product_id):
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    if request.method == 'POST':
+        form = UpdateStockForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('seller_dashboard')
+    else:
+        form = UpdateStockForm(instance=product)
+    return render(request, 'app/update_stock.html', {'form': form, 'product': product})
 
 @login_required
 def create_product(request):
     if request.method == 'POST':
-        form = ProductCreationForm(request.POST)
+        form = ProductCreationForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
             product.seller = request.user
@@ -231,6 +233,61 @@ def remove_product(request, product_id):
     product = get_object_or_404(Product, id=product_id, seller=request.user)
     product.delete()
     return redirect('seller_dashboard')
+# Order History Page
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(user=request.user)
+    return render(request, 'app/order_history.html', {'orders': orders})
+  
+# Order Detail Page
+@login_required
+def order_detail(request, order_id):
+    order = Order.objects.get(id=order_id)
+    return render(request, 'app/order_detail.html', {'order': order})
+
+# Order Return Page
+@login_required
+@require_POST
+def order_return(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
+    for product_id, product_details in order.cart_products.items(): # type: ignore #
+        print("Product info: ", product_id, product_details)
+        name = product_details['name']
+        price = float(product_details['price'])
+        quantity = int(product_details['quantity'])
+        seller = User.objects.get(username=product_details['seller'])
+        productObj, created = Product.objects.get_or_create(pk=product_id)
+        if created:
+            productObj.name = name
+            productObj.price = price
+            productObj.stock = quantity
+            productObj.seller = seller
+        else:
+            productObj.stock += int(quantity)
+        productObj.save()
+    order.status = 'Returned'
+    order.save()
+    return redirect('order_return_success')
+
+# Order Return Success Page
+@login_required
+def order_return_success(request):
+    return render(request, 'app/order_return.html')
+
+# Logout View
+from django.contrib.auth import logout
+
+
+@require_POST
+def logout_view(request):
+  logout(request)
+  return render(request, 'app/logout.html')
+
+
+
+@login_required
+def admin_dashboard(request):
+  return render(request, 'app/admin_dashboard.html')
 
 def home(request):
   return render(request, 'app/home.html')

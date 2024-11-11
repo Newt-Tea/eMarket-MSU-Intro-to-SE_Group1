@@ -9,6 +9,7 @@
 </head>
 <body>
   <header>
+    <div class="project-name">eMarket</div>
     <nav>
       <ul>
         <li><a href="{% url 'shopping_cart' %}">Shopping Cart</a></li>
@@ -24,19 +25,24 @@
   </header>
   <main>
     <h1>Product List</h1>
-    <form method="GET" action="{% url 'product_list' %}">
-      {{ form.search_query }}
+    <form method="GET" action="{% url 'product_list' %}" enctype=”multipart/form-data”>      {{ form.search_query }}
       {{ form.sort }}
       <button type="submit">Search & Sort</button>
     </form>
     <ul>
       {% for product in products %}
         <li>
-          <h2>{{ product.name }}</h2>
-          <p>{{ product.description }}</p>
-          <p>Price: ${{ product.price }}</p>
-          <a href="{% url 'add_to_cart' product.id %}">Add to Cart</a></br>
-          <a href="{% url 'product_detail' product.id %}">View Details</a>
+          <div class="product-container">
+            <img src="{{ product.image.url }}" class="product-image">
+            <div class="product-info">
+              <h2>{{ product.name }}</h2>
+              <p>{{ product.description }}</p>
+              <p>Price: ${{ product.price }}</p>
+              <p>In Stock: {{ product.stock }}</p>
+              <a href="{% url 'add_to_cart' product.id %}" class="button">Add to Cart</a></br>
+              <a href="{% url 'product_detail' product.id %}" class="button view-details">View Details</a>
+            </div>
+          </div>
         </li>
       {% endfor %}
     </ul>

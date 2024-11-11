@@ -1,0 +1,155 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background: #4d0404;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    width: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Main Container Styles */
+h1, h2, h3 {
+    color: #3498db; /* Blue for headings */
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Order Detail Container */
+.order-detail {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+}
+
+/* Styling the Order Status */
+.status {
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    color: white;
+}
+
+.status-pending {
+    background-color: #f39c12; /* Yellow for pending */
+}
+
+.status-shipped {
+    background-color: #2ecc71; /* Green for shipped */
+}
+
+.status-delivered {
+    background-color: #3498db; /* Blue for delivered */
+}
+
+.status-cancelled {
+    background-color: #e74c3c; /* Red for cancelled */
+}
+
+/* List of Items */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+ul li:last-child {
+    border-bottom: none;
+}
+
+/* Price Formatting */
+strong {
+    font-weight: bold;
+    color: #555;
+}
+
+p {
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Back to Order History Button */
+a.button {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s;
+}
+
+a.button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+    .order-detail {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    ul li {
+        font-size: 0.9rem;
+    }
+
+    a.button {
+        padding: 0.5rem 1rem;
+    }
+}

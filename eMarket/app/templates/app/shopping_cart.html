@@ -8,20 +8,40 @@
     <title>Shopping Cart</title>
 </head>
 <body>
-    <h1>Shopping Cart</h1>
-    <ul>
-        {% for item in cart_items %}
-            <li>{{ item.product.name }} - {{ item.quantity }} - ${{ item.get_total }}</li>
-            <a href="{% url 'remove_from_cart' item.product_id %}">Remove one from cart</a>
-        {% empty %}
-            <li>Your cart is empty.</li>
-        {% endfor %}
-    </ul>
-    <p>Total: ${{ total }} </p>
-    <footer>
-    <a href="{% url 'checkout' %}">Proceed to Checkout</a>
-    <br>
-    <a href="{% url 'product_list' %}">Or continue shopping</a>
-    </footer>
+    <header>
+        <div class="project-name">eMarket</div>
+    </header>
+    <main>
+        <h1>Shopping Cart</h1>
+        <ul>
+            {% for item in cartProducts %}
+                <li>
+                    <div class="container">
+                        <div class="cart-info">
+                            <h2>{{ item.product.name }}</h2>
+                            <form method="post" action="{% url 'update_cart_quantity' item.product.id %}">
+                                {% csrf_token %}
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
+                                <button type="submit" class="button">Update</button>
+                            </form>
+                            <p>Total: ${{ item.get_total }}</p>
+                        </div>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="empty-cart">Your cart is empty.</li>
+            {% endfor %}
+        </ul>
+        {% if cartProducts %}
+            <footer>
+                <p>Total: ${{ total }} </p>
+                <a href="{% url 'checkout' %}" class="button">Proceed to Checkout</a>
+            </footer>
+        {% endif %}
+        <footer>
+            <a href="{% url 'product_list' %}" class="button">Continue shopping</a>
+        </footer>
+    </main>
 </body>
 </html>

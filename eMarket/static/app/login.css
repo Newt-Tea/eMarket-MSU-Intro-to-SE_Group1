@@ -10,6 +10,13 @@ body{
     margin: 0;
 }
 
+header {
+    background: #4d0404;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
 h2{
     margin-bottom: 20px;
     color: #444;
@@ -77,6 +84,24 @@ a{
 a:hover{
     text-decoration: underline;
 }
+.create-account-button {
+    display: inline-block;           
+    padding: 12px 20px;              
+    background-color: #007BFF;       
+    color: white;                    
+    font-size: 16px;                
+    font-weight: bold;             
+    text-align: center;             
+    text-decoration: none;           
+    border-radius: 5px;              
+    border: none;                
+    cursor: pointer;                
+    transition: background-color 0.3s, transform 0.2s ease;
+  }
+  .create-account-button:hover {
+    background-color: #007BFF;       
+    transform: translateY(-2px);    
+  }
 
 .error{ /* Corrected class name from 'errror' to 'error' */
     color: red;
