@@ -20,9 +20,9 @@
       {{ form.as_p }}
         <p> Total: ${{ total }} </p>
         <button type="submit">Pay</button>
+        <div class="button-container">
+          <a href="{% url 'product_list' %}" class="button">Continue shopping</a>
+        </div>
     </form>
-    <p>
-      <a href="{% url 'product_list' %}">Continue shopping</a>
-    </p>
 </body>
 </html>

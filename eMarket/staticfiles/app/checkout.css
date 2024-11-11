@@ -5,7 +5,7 @@ body {
 }
 
 header {
-  background: #007BFF;
+  background: #4d0404;
   color: white;
   padding: 10px 20px;
   text-align: center;
@@ -52,4 +52,29 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }

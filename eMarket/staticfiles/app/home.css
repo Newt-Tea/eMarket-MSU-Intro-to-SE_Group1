@@ -55,8 +55,9 @@ footer {
     display: flex;
     justify-content: center;
     gap: 10px; /* Add some space between the buttons */
+    min-width: 300px; /* Ensure the container isn't too small */
 }
-.-button {
+.button {
     padding: 10px 20px;
     font-size: 16px;
     color: white;
@@ -67,7 +68,7 @@ footer {
     transition: background-color 0.3s ease;
 }
 
-.-button:hover {
+.button:hover {
     background-color: #0056b3;
 }
 
@@ -80,5 +81,8 @@ footer {
     }
     p {
         font-size: 1rem;
+    }
+    .button-container {
+        flex-direction: column; /* Stack buttons vertically on small screens */
     }
 }
