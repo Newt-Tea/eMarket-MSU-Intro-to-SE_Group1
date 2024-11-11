@@ -17,7 +17,8 @@ header {
 	text-align: center; /* Center the project name */
 }
 nav {
-	text-align: right; /* Align navigation to the right */
+	text-align: center; /* Align navigation to the right */
+	align-items: center;
 }
 nav ul{
 	list-style-type: none;
@@ -27,6 +28,7 @@ nav ul{
 nav ul li{
 	display: inline;
 	margin-right: 15px;
+	max-width: 20%;
 }
 nav a, nav button{
 	color: black;

@@ -10,6 +10,8 @@
 <body>
   <header>
     <div class="project-name">eMarket</div>
+  </header>
+  <main>
     <nav>
       <ul>
         <li><a href="{% url 'shopping_cart' %}">Shopping Cart</a></li>
@@ -22,8 +24,6 @@
         </li>
       </ul>
     </nav>
-  </header>
-  <main>
     <h1>Product List</h1>
     <form method="GET" action="{% url 'product_list' %}" enctype=”multipart/form-data”>      {{ form.search_query }}
       {{ form.sort }}
