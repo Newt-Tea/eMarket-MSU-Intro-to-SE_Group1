@@ -35,6 +35,7 @@ def sort(a,low=0,high=-1):
 # Array form = [[productIndex,similarity],[productIndex2,similarity2]...]
 def search(searchInput,productList):
     searchResults = []
+    searchInput = searchInput.lower()
     for i in range(len(productList)):
         product = productList[i].lower()
         m = len(searchInput)
@@ -42,8 +43,19 @@ def search(searchInput,productList):
         memo = [[-1 for _ in range(n+1)] for _ in range(m+1)]
         similarity = lcs(searchInput,product,m,n,memo)
         if similarity > m: similarity = m # Weird bug I couldn't figure out, caused values > m which would freak out the sorting
-        if min(3,n) <= similarity:
+        if similarity >= min(2, n):
             searchResults.append([i,similarity])
             for j in range(len(searchResults)-1,0,-1):
                 if searchResults[j-1][1] < searchResults[j][1]: (searchResults[j-1],searchResults[j]) = (searchResults[j],searchResults[j-1])
     return searchResults
+
+
+# Sample list of product names
+product_names = ["Phone", "Book", "Laptop", "Tablet"]
+
+# Example search term
+search_term = "Tab"
+
+# Running the search function from utils.py
+search_results = search(search_term, product_names)
+print("Search results for 'Tab':", search_results)

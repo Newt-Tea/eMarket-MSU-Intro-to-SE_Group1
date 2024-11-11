@@ -2,6 +2,7 @@ from decimal import Decimal
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     USER_TYPE_CHOICES = (
@@ -21,6 +22,12 @@ class Product(models.Model):
     image = models.ImageField(default="default.jpeg", upload_to="media/", blank=True)
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        # Enforce seller-only restriction
+        if self.seller and self.seller.user_type != 'seller':
+            raise ValidationError("Only users with a seller account can create products.")
+        super().save(*args, **kwargs)
 
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'buyer'})
