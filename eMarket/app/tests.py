@@ -3,6 +3,7 @@ from .models import *
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .utils import *
+from django.core.exceptions import ValidationError
 
 # Test cases for user model
 class testUser(TestCase):
@@ -85,9 +86,9 @@ class testProduct(TestCase):
     def test_buyer_cannot_create_product(self):
         print("\nTest: test_buyer_cannot_create_product")
         # Attempt to create a product with a buyer user
-        with self.assertRaises(ValueError, msg="Only sellers should be able to create products."):
+        with self.assertRaises(ValidationError, msg="Only sellers should be able to create products."):
             Product.objects.create(name="Tablet", price=500.00, stock=5, seller=self.buyerUser)
-
+        
     def test_ProductDeletion(self):
         print("\nTest: test_ProductDeletion")
         # Seller creates and then deletes a product
@@ -122,7 +123,6 @@ class testProductSearchSort(TestCase):
         # Use the search function to find a non-existent product
         product_names = [p.name for p in Product.objects.all()]
         search_results = search("Camera", product_names)
-        
         # Verify that no products are found
         self.assertEqual(len(search_results), 0, "Search should return no results for 'Camera'.")
 
@@ -395,7 +395,7 @@ class testView(TestCase):
 class TestOrderReturn(TestCase):
     def setUp(self):
         # Set up a user, products, cart, and an order with cart products
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.user = User.objects.create_user(username='testuser', password='password',user_type='seller')
         self.client.login(username='testuser', password='password')
         self.product1 = Product.objects.create(name="Phone", price=500, stock=10, seller=self.user)
         self.product2 = Product.objects.create(name="Book", price=20, stock=5, seller=self.user)
