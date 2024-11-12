@@ -22,7 +22,8 @@ class ProductCreationForm(ModelForm):
     """
     class Meta:
         model = Product
-        fields = ['name', 'price', 'stock', 'image']
+        fields = ['name','price','description','stock','image']
+
         labels = {
             'name': 'Item Name',
             'price': 'Price $',
