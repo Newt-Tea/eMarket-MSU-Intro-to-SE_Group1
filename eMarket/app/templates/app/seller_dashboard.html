@@ -40,7 +40,7 @@
         {% for order in orders %}
             <li class="order-info">
                 <a href="{% url 'order_detail' order.id %}" class="button"> Order #{{ order.user_order_id }}</a>
-                    - Total: ${{ order.total }} - Status: <span class="order-status {{ order.status }}">{{ order.status }}</span> - Bought by: {{ order.user }}
+                    Total: ${{ order.total }} <span class="order-status {{ order.status }}">Status: {{ order.status }}</span> Bought by: {{ order.user }}
             </li>
         {% endfor %}
     </ul>

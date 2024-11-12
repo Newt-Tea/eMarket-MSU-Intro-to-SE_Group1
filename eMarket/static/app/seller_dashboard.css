@@ -109,7 +109,7 @@ li:last-child {
 
 .order-status {
     font-weight: bold;
-    color: #28a745;
+    color: #00A36C;
 }
 
 .order-status.pending {
@@ -120,7 +120,7 @@ li:last-child {
     color: #17a2b8;
 }
 
-.order-status.returned {
+.order-status.Returned {
     color: #dc3545;
 }
 
