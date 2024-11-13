@@ -1,7 +1,7 @@
 # eMarket-MSU-Intro-to-SE_Group1
 
 ## Description and Objective
-A locally hosted online shopping application built for Intro to Software Engineering at Mississippi State University. This program is designed as a locally hosted example of an e-commerce website.
+A locally hosted online shopping application built for Intro to Software Engineering at Mississippi State University. This program is designed as a non-production example of an e-commerce website.
 
 ## Created By
 - Hudson Hargrove | Newt Tea | Front-End
