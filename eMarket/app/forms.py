@@ -71,3 +71,22 @@ class ProductSearchForm(forms.Form):
         choices=SORT_CHOICES,
         required=False
     )
+
+class AccountManagementForm(ModelForm):
+    """
+    A form for approving or deleting user accounts.
+    """
+    pending = forms.ChoiceField(
+        choices=[(True, 'Deny'), (False, 'Approve')],
+        widget=forms.Select,
+        label='Approve this account?',
+        required=False
+    )
+    #non editable widgets
+    id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+    username = forms.CharField(required=False)
+    user_type = forms.CharField(required=False)
+
+    class Meta:
+        model = User
+        fields = ['id','username', 'user_type','pending']
