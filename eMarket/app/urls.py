@@ -23,5 +23,6 @@ urlpatterns = [
     path('seller_dashboard/create_product/', views.create_product, name='create_product'),
     path('seller_dashboard/remove_product/<int:product_id>/', views.remove_product, name='remove_product'),
     path('update_stock/<int:product_id>/', views.update_stock, name='update_stock'),
-    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard')
+    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('user_list/',views.user_list, name='user_list'),
 ]
