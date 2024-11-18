@@ -15,8 +15,8 @@
     <div class="order-detail">
         <h2>Order ID: {{ order.user_order_id }}</h2>
         <p><strong>Date:</strong> {{ order.date_created }}</p>
-        <p><strong>Status:</strong> {{ order.status }}</p>
-        <h3>Items:</h3>
+        <p class="order-status {{ order.status }}">Status: {{ order.status }}</p>
+        <h3>Items</h3>
         <ul>
             {% for product_id, product_details in order.cart_products.items %}
                 <li>
@@ -30,6 +30,10 @@
         </ul>
         <p><strong>Total Price:</strong> ${{ order.total }}</p>
     </div>
-    <a href="{% url 'order_history' %}" class="button">Back to Order History</a>
+    {% if request.user.user_type == 'seller' %}
+        <a href="{% url 'seller_dashboard' %}" class="button">Back to Seller Dashboard</a>
+    {% else %}
+        <a href="{% url 'order_history' %}" class="button">Back to Order History</a>
+    {% endif %}
 </body>
 </html>
