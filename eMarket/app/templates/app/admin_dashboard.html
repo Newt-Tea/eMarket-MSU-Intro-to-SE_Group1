@@ -9,34 +9,23 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to eMarket</h1>
+        <h1 class="header-title">Welcome to eMarket</h1>
     </header>
-    <h1>Admin Dashboard</h1>
-    <form method="POST" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-    <h2>Pending Users</h2>
-    <ul>
-        {% for user in pending_users %}
-            <li>
-                {{ user.username }} - {{ user.user_type }}
-                <form method="POST" action="{% url 'approve_user' user.id %}">
-                    {% csrf_token %}
-                    <button type="submit">Approve</button>
-                </form>
-                <form method="POST" action="{% url 'delete_user' user.id %}">
-                    {% csrf_token %}
-                    <button type="submit">Delete</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
-    <h2>All Orders</h2>
-    <ul>
-        {% for order in orders %}
-            <li>{{ order.user.username }} - {{ order.total }} - {{ order.status }}</li>
-        {% endfor %}
-    </ul>
+    <h1 class="dashboard-title">Admin Dashboard</h1>
+    <nav class="navbar">
+        <form method="POST" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="button">Logout</button>
+        </form>
+        <a href="{% url 'user_list' %}" class="button">View Pending Users</a>
+    </nav>
+    <div class="dashboard">
+        <h2 class="orders-title">All Orders</h2>
+        <ul class="order-list">
+            {% for order in orders %}
+                <li class="order-item">{{ order.user.username }} - {{ order.total }} - {{ order.status }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
