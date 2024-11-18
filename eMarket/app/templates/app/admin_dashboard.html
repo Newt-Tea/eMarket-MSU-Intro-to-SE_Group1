@@ -3,12 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/admin_dashboard.css' %}">
+    <title>Admin Dashboard</title>
 </head>
 <body>
-  <header>
-    <div class="project-name">eMarket</div>
-  </header>
-    <h1>Placeholder</h1>
+    <header>
+        <h1>Welcome to eMarket</h1>
+    </header>
+    <h1>Admin Dashboard</h1>
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    <h2>Pending Users</h2>
+    <ul>
+        {% for user in pending_users %}
+            <li>
+                {{ user.username }} - {{ user.user_type }}
+                <form method="POST" action="{% url 'approve_user' user.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Approve</button>
+                </form>
+                <form method="POST" action="{% url 'delete_user' user.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <h2>All Orders</h2>
+    <ul>
+        {% for order in orders %}
+            <li>{{ order.user.username }} - {{ order.total }} - {{ order.status }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
