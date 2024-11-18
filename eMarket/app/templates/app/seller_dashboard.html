@@ -9,35 +9,39 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to eMarket</h1>
+        <div class="project-name">eMarket</div>
     </header>
+    <nav class="navbar">
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="button">Logout</button>
+        </form>
+        <a href="{% url 'create_product' %}" class="button">Create Product</a>
+    </nav>
     <h1>Seller Dashboard</h1>
-    <form method="POST" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-    <a href="{% url 'create_product' %}">Create Product</a>
-    <h2>Your Products</h2>
-    <ul>
+    <ul class="container">
+        <h2>Your Products</h2>
         {% for product in products %}
-            <li>
+            <li class="product-info">
                 {{ product.name }} - In Stock: {{ product.stock }}
                 <form method="POST" action="{% url 'update_stock' product.id %}">
                     {% csrf_token %}
                     <label for="stock">Stock:</label>
                     <input type="number" name="stock" value="{{ product.stock }}" min="0">
-                    <button type="submit">Update Stock</button>
+                    <button type="submit" class="button">Update Stock</button>
                 </form>
-                <a href="{% url 'remove_product' product.id %}">Remove</a>
+                <a href="{% url 'remove_product' product.id %}" class="button" style="color:4d0404">Remove</a>
             </li>
         {% endfor %}
     </ul>
-    <h2>Your Orders</h2>
-    <ul>
+    
+    <ul class="container">
+        <h2>Your Orders</h2>
         {% for order in orders %}
-            {% for cart_product in order.cart.cartProducts.all %}
-                <li>{{ cart_product.product.name }} - {{ cart_product.quantity }} - {{ order.user.username }} - {{ order.status }}</li>
-            {% endfor %}
+            <li class="order-info">
+                <a href="{% url 'order_detail' order.id %}" class="button"> Order #{{ order.user_order_id }}</a>
+                    Total: ${{ order.total }} <span class="order-status {{ order.status }}">Status: {{ order.status }}</span> Bought by: {{ order.user }}
+            </li>
         {% endfor %}
     </ul>
 </body>
