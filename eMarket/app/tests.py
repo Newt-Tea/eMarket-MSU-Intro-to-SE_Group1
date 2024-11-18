@@ -462,3 +462,103 @@ class TestOrderReturn(TestCase):
         self.assertContains(response, 'Returned', msg_prefix="Order detail should display updated status as 'Returned'.")
         self.assertContains(response, self.product1.name)
         self.assertContains(response, self.product2.name)
+
+class TestAdminFunctionality(TestCase):
+    def setUp(self):
+        # Create test users and a seller
+        self.adminUser = User.objects.create_superuser(username='admin', password='adminPass', user_type='admin')
+        self.buyerUser = User.objects.create_user(username='buyer', password='buyerPass', user_type='buyer', pending=True)
+        self.sellerUser = User.objects.create_user(username='seller', password='sellerPass', user_type='seller', pending=True)
+        
+        # Create products for approval
+        self.pendingProduct = Product.objects.create(name="Phone", price=500, seller=self.sellerUser, pending=True)
+        self.anotherPendingProduct = Product.objects.create(name="Laptop", price=1000, seller=self.sellerUser, pending=True)
+
+    def test_approve_user(self):
+        print("\nTest: test_approve_user")
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+        
+        # Simulate approving a user via POST
+        response = self.client.post(reverse('user_list'), data={
+            'form-0-id': self.buyerUser.id,
+            'form-0-pending': 'False',
+            'form-TOTAL_FORMS': '1',
+            'form-INITIAL_FORMS': '1',
+        })
+        self.assertEqual(response.status_code, 302, "Response should redirect after approval.")
+        
+        # Verify user is no longer pending
+        self.buyerUser.refresh_from_db()
+        self.assertFalse(self.buyerUser.pending, "Buyer user should be approved (pending=False).")
+
+    def test_deny_user(self):
+        print("\nTest: test_deny_user")
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+        
+        # Simulate denying a user via POST
+        response = self.client.post(reverse('user_list'), data={
+            'form-0-id': self.sellerUser.id,
+            'form-0-pending': 'True',
+            'form-TOTAL_FORMS': '1',
+            'form-INITIAL_FORMS': '1',
+        })
+        self.assertEqual(response.status_code, 302, "Response should redirect after denial.")
+        
+        # Verify user is deleted
+        self.assertFalse(get_user_model().objects.filter(id=self.sellerUser.id).exists(), "Seller user should be deleted.")
+
+    def test_approve_product(self):
+        print("\nTest: test_approve_product")
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+        
+        # Simulate approving a product via POST
+        response = self.client.post(reverse('admin_product_list'), data={
+            'form-0-id': self.pendingProduct.id,
+            'form-0-pending': 'False',
+            'form-TOTAL_FORMS': '1',
+            'form-INITIAL_FORMS': '1',
+        })
+        self.assertEqual(response.status_code, 302, "Response should redirect after approval.")
+        
+        # Verify product is no longer pending
+        self.pendingProduct.refresh_from_db()
+        self.assertFalse(self.pendingProduct.pending, "Product should be approved (pending=False).")
+
+    def test_deny_product(self):
+        print("\nTest: test_deny_product")
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+        
+        # Simulate denying a product via POST
+        response = self.client.post(reverse('admin_product_list'), data={
+            'form-0-id': self.anotherPendingProduct.id,
+            'form-0-pending': 'True',
+            'form-TOTAL_FORMS': '1',
+            'form-INITIAL_FORMS': '1',
+        })
+        self.assertEqual(response.status_code, 302, "Response should redirect after denial.")
+        
+        # Verify product is deleted
+        self.assertFalse(Product.objects.filter(id=self.anotherPendingProduct.id).exists(), "Product should be deleted.")
+
+    def test_verify_approved_product_has_correct_seller(self):
+        print("\nTest: test_verify_approved_product_has_correct_seller")
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+        
+        # Simulate approving a product via POST
+        response = self.client.post(reverse('admin_product_list'), data={
+            'form-0-id': self.pendingProduct.id,
+            'form-0-pending': 'False',
+            'form-TOTAL_FORMS': '1',
+            'form-INITIAL_FORMS': '1',
+        })
+        self.assertEqual(response.status_code, 302, "Response should redirect after approval.")
+        
+        # Verify the product is approved and associated with the correct seller
+        self.pendingProduct.refresh_from_db()
+        self.assertEqual(self.pendingProduct.seller.username, self.sellerUser.username, "Product should have the correct seller.")
+        self.assertFalse(self.pendingProduct.pending, "Product should be approved (pending=False).")
