@@ -250,7 +250,13 @@ def add_product(request):
 @login_required
 def seller_dashboard(request):
     products = Product.objects.filter(seller=request.user).distinct()
-    orders = Order.objects.filter(cart__cartProducts__product__seller=request.user).distinct()
+    orders = []
+    all_orders = Order.objects.all()
+    for order in all_orders: 
+      for product_info in order.cart_products.values():
+        if product_info.get("seller") == request.user.username:
+          orders.append(order)
+          break
     return render(request, 'app/seller_dashboard.html', {'products': products, 'orders': orders})
   
 @login_required
