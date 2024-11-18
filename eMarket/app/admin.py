@@ -25,13 +25,14 @@ class UserAdmin(admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         
         # Check if the user_type is 'seller' to add the "Seller Products" fieldset
-        if obj.user_type == 'seller': # type: ignore # obj is a User object
-            # Append the Seller Products fieldset
-            fieldsets += (
-                ('Seller Products', {
-                    'fields': ('ProductSet', ),
-                }),
-            )
+        if obj != None:
+            if obj.user_type == 'seller': # type: ignore # obj is a User object
+                # Append the Seller Products fieldset
+                fieldsets += (
+                    ('Seller Products', {
+                        'fields': ('ProductSet', ),
+                    }),
+                )
         
         return fieldsets
 
@@ -69,7 +70,8 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ('date_created', )
 
     # How Products are displayed in the list
-    list_display = ('name', 'price', 'stock', 'formattedProductID', )
+    list_display = ('name', 'price', 'stock', 'formattedProductID', 'pending')
+    list_editable = ('pending', )
 
     # Search functionality
     search_fields = ('name', )

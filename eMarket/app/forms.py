@@ -90,3 +90,22 @@ class AccountManagementForm(ModelForm):
     class Meta:
         model = User
         fields = ['id','username', 'user_type','pending']
+
+class ProductManagementForm(ModelForm):
+    """
+    A form for approving or deletings newly made products.
+    """
+    pending = forms.ChoiceField(
+        choices=[(True, 'Deny'), (False, 'Approve')],
+        widget=forms.Select,
+        label='Approve this product?',
+        required=False
+    )
+    # Non-editable widgets
+    id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+    name = forms.CharField(required=False)
+    price = forms.DecimalField(max_digits=10, decimal_places=2, required=False)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'pending']
