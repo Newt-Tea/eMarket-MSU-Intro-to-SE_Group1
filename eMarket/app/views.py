@@ -20,7 +20,7 @@ def product_list(request):
         HttpResponse: The rendered product list page with the search form and products.
     """
     form = ProductSearchForm(request.GET or None)
-    products = list(Product.objects.all())  # Convert queryset to list for sorting
+    products = list(Product.objects.filter(pending=False))  # Convert queryset to list for sorting
 
     if form.is_valid():
         search_query = form.cleaned_data.get('search_query')
@@ -340,10 +340,80 @@ def logout_view(request):
   return render(request, 'app/logout.html')
 
 
+################################
+####### ADMIN FUNCTIONS ########
+################################
 
 @login_required
 def admin_dashboard(request):
   return render(request, 'app/admin_dashboard.html')
+
+# Account management
+from django.forms import formset_factory
+from .forms import AccountManagementForm
+@login_required
+def user_list(request):
+    users = User.objects.filter(pending=True)
+    AccountManagementFormSet = formset_factory(AccountManagementForm, extra=0)
+    formset = AccountManagementFormSet(initial=[
+        {
+            'id': user.id,
+            'username': user.username, 
+            'user_type': user.user_type, 
+            'pending': True
+        } for user in users
+    ])
+
+    if request.method == 'POST':
+        formset = AccountManagementFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                user_id = form.cleaned_data['id']
+                user = User.objects.filter(id=user_id).first()
+                option = form.cleaned_data['pending']
+                if option == 'True':
+                    user.delete()
+                else:
+                    user.pending = False
+                    user.save()
+            return redirect('user_list')
+        if not formset.is_valid():
+            print("Formset errors:", formset.errors)
+    return render(request, 'app/user_list.html', {'formset': formset, 'users': users})
+
+# Product Management
+from .forms import ProductManagementForm
+@login_required
+def admin_product_list(request):
+    products = Product.objects.filter(pending=True)
+    ProductManagementFormSet = formset_factory(ProductManagementForm, extra=0)
+    formset = ProductManagementFormSet(initial=[
+        {
+            'id': product.id,
+            'name': product.name, 
+            'price': product.price,
+            'pending': True
+        } for product in products
+    ])
+
+    if request.method == 'POST':
+        formset = ProductManagementFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                product_id = form.cleaned_data['id']
+                product = Product.objects.filter(id=product_id).first()
+                product.seller = Product.objects.get(id=product_id).seller
+                option = form.cleaned_data['pending']
+                if option == 'True':
+                    product.delete()
+                else:
+                    product.pending = False
+                    product.save()
+            return redirect('admin_product_list')
+        if not formset.is_valid():
+            print("Formset errors:", formset.errors)
+    return render(request, 'app/admin_product_list.html', {'formset': formset, 'products': products})
+
 
 def home(request):
   return render(request, 'app/home.html')
