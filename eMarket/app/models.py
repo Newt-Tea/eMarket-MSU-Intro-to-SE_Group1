@@ -40,19 +40,20 @@ class Product(models.Model):
     date_created = models.DateTimeField(null=True,auto_now_add=True)
     seller = models.ForeignKey(User, on_delete=models.CASCADE, null=True, limit_choices_to={'user_type': 'seller'}, related_name='products')
     image = models.ImageField(default="default.jpeg", upload_to="media/", blank=True)
+    pending = models.BooleanField(default=True)
     
     def __str__(self):
         return self.name
     
     def save(self, *args, **kwargs):
         """
-        Save method to enforce seller-only restriction.
+        Save method to enforce seller/admin-only restriction.
         
         Raises:
-            ValidationError: If the user is not a seller.
+            ValidationError: If the user is not a seller or admin.
         """
-        if self.seller and self.seller.user_type != 'seller':
-            raise ValidationError("Only users with a seller account can create products.")
+        if self.seller and self.seller.user_type == 'buyer':
+            raise ValidationError("Only users with a seller or admin account can create products.")
         super().save(*args, **kwargs)
 
 class Cart(models.Model):
