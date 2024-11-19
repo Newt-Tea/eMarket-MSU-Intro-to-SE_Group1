@@ -426,7 +426,7 @@ class TestOrderReturn(TestCase):
     def test_return_order_status(self):
         print("\nTest: test_return_order_status")
         # Verify that returning an order updates the status to 'Returned'
-        response = self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
+        response = self.client.post(reverse('order_return', args=[self.order.pk]))
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, 'Returned', "Order status should be 'Returned' after return.")
 
@@ -435,7 +435,7 @@ class TestOrderReturn(TestCase):
         # Check that returning an order updates product stock correctly
         original_stock1 = self.product1.stock
         original_stock2 = self.product2.stock
-        self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
+        self.client.post(reverse('order_return', args=[self.order.pk]))
         self.product1.refresh_from_db()
         self.product2.refresh_from_db()
         self.assertEqual(self.product1.stock, original_stock1 + 2, "Product1 stock should increase by order quantity.")
@@ -444,21 +444,21 @@ class TestOrderReturn(TestCase):
     def test_return_redirect(self):
         print("\nTest: test_return_redirect")
         # Confirm redirection to success page after returning an order
-        response = self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
+        response = self.client.post(reverse('order_return', args=[self.order.pk])) # type: ignore
         self.assertRedirects(response, reverse('order_return_success'), msg_prefix="Returning an order should redirect to success page.")
 
     def test_order_in_history(self):
         print("\nTest: test_order_in_history")
         # Verify that a returned order appears correctly in order history
-        self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
+        self.client.post(reverse('order_return', args=[self.order.pk])) # type: ignore
         response = self.client.get(reverse('order_history'))
         self.assertContains(response, 'Returned', msg_prefix="Returned order should appear with updated status in history.")
 
     def test_order_detail_after_return(self):
         print("\nTest: test_order_detail_after_return")
         # Check that order detail page displays correctly after return
-        self.client.post(reverse('order_return', args=[self.order.id])) # type: ignore
-        response = self.client.get(reverse('order_detail', args=[self.order.id])) # type: ignore
+        self.client.post(reverse('order_return', args=[self.order.pk])) # type: ignore
+        response = self.client.get(reverse('order_detail', args=[self.order.pk])) # type: ignore
         self.assertContains(response, 'Returned', msg_prefix="Order detail should display updated status as 'Returned'.")
         self.assertContains(response, self.product1.name)
         self.assertContains(response, self.product2.name)
@@ -507,9 +507,9 @@ class TestBuyerFunctionality(TestCase):
         print("\nTest: test_buyer_add_to_cart")
         # Test adding a product to the cart
         product = Product.objects.get(name="Book")
-        response = self.client.post(reverse('add_to_cart', args=[product.id]), {'quantity': 2}) # type: ignore
+        response = self.client.post(reverse('add_to_cart', args=[product.pk]), {'quantity': 2}) # type: ignore
         cart_product_exists = CartProduct.objects.filter(cart__user=self.buyerUser, product=product).exists()
-        print(f"Input: product_id={product.id}, quantity=2") # type: ignore
+        print(f"Input: product_id={product.pk}, quantity=2") # type: ignore
         print(f"Output: cart_product_exists={cart_product_exists}")
         self.assertTrue(cart_product_exists, "Product was not added to the cart.")
 
@@ -520,16 +520,11 @@ class TestBuyerFunctionality(TestCase):
         cart = Cart.objects.create(user=self.buyerUser)
         CartProduct.objects.create(cart=cart, product=product, quantity=1)
         response = self.client.post(reverse('checkout'), {"card_number": '1234123412341234', "expiry_date": '12/23', "cvv": '123'})
-        print("Input: payment_method='credit_card'")
-        print(f"Output: response.status_code={response.status_code}")
         self.assertEqual(response.status_code, 302)  # Redirect status code
 
     def test_buyer_order_history(self):
-        print("\nTest: test_buyer_order_history")
         # Test viewing order history
         response = self.client.get(reverse('order_history'))
-        print("Input: GET request to 'order_history'")
-        print(f"Output: response.status_code={response.status_code}")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/order_history.html')
 
@@ -541,56 +536,43 @@ class TestSellerFunctionality(TestCase):
         self.client.login(username='sellerUser', password='sellerPass')
 
     def test_seller_create_product(self):
-        print("\nTest: test_seller_create_product")
         # Test seller creating a product
         response = self.client.post(reverse('create_product'), {
             'name': 'NewProduct',
             'price': 100.00,
+            'description': 'A new product',
             'stock': 10,
+            'image': 'image.jpg'
         })
         product_exists = Product.objects.filter(name='NewProduct').exists()
-        print("Input: name='NewProduct', price=100.00, stock=10")
-        print(f"Output: product_exists={product_exists}")
         self.assertTrue(product_exists, "Product was not created by the seller.")
 
     def test_seller_update_stock(self):
-        print("\nTest: test_seller_update_stock")
         # Test seller updating product stock
         product = Product.objects.create(name="ExistingProduct", price=50.00, stock=5, seller=self.sellerUser)
-        response = self.client.post(reverse('update_stock', args=[product.id]), {'stock': 20})
+        response = self.client.post(reverse('update_stock', args=[product.pk]), {'stock': 20})
         product.refresh_from_db()
-        print(f"Input: product_id={product.id}, stock=20")
-        print(f"Output: product.stock={product.stock}")
         self.assertEqual(product.stock, 20, "Product stock was not updated correctly.")
 
     def test_seller_remove_product(self):
-        print("\nTest: test_seller_remove_product")
         # Test seller removing a product
         product = Product.objects.create(name="ProductToRemove", price=30.00, stock=5, seller=self.sellerUser)
-        response = self.client.post(reverse('remove_product', args=[product.id]))
+        response = self.client.post(reverse('remove_product', args=[product.pk]))
         product_exists = Product.objects.filter(name='ProductToRemove').exists()
-        print(f"Input: product_id={product.id}")
-        print(f"Output: product_exists={product_exists}")
         self.assertFalse(product_exists, "Product was not removed by the seller.")
 
     def test_seller_view_orders(self):
-        print("\nTest: test_seller_view_orders")
         # Test seller viewing their orders
         response = self.client.get(reverse('seller_dashboard'))
-        print("Input: GET request to 'seller_dashboard'")
-        print(f"Output: response.status_code={response.status_code}")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/seller_dashboard.html')
 
     def test_seller_order_detail(self):
-        print("\nTest: test_seller_order_detail")
         # Test seller viewing order details
         product = Product.objects.create(name="ProductInOrder", price=100.00, stock=5, seller=self.sellerUser)
         cart = Cart.objects.create(user=self.sellerUser)
         cart_product = CartProduct.objects.create(cart=cart, product=product, quantity=2)
         order = Order.objects.create(user=self.sellerUser, cart=cart, total=200.00)
-        response = self.client.get(reverse('order_detail', args=[order.id]))
-        print(f"Input: order_id={order.id}")
-        print(f"Output: response.status_code={response.status_code}")
+        response = self.client.get(reverse('order_detail', args=[order.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/order_detail.html')
