@@ -24,7 +24,7 @@
         <h2 class="orders-title">All Orders</h2>
         <ul class="order-list">
             {% for order in orders %}
-                Order #{{ order.user_order_id }} <br> 
+                <a href="{% url 'order_detail' order.id %}" class="button">Order #{{ order.user_order_id }} </a> <br>
                 {{ order.user }} bought:
                     {% for product_id, product_details in order.cart_products.items %}
                     <li>
