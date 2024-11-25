@@ -32,8 +32,11 @@
     </div>
     {% if request.user.user_type == 'seller' %}
         <a href="{% url 'seller_dashboard' %}" class="button">Back to Seller Dashboard</a>
-    {% else %}
+    
+    {% elif request.user.user_type == 'buyer' %}
         <a href="{% url 'order_history' %}" class="button">Back to Order History</a>
+    {% else %}
+        <a href="{% url 'admin_dashboard' %}" class="button">Back to Admin Dashboard</a>
     {% endif %}
 </body>
 </html>
