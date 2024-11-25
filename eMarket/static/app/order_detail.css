@@ -42,7 +42,7 @@ h2 {
 h3 {
     font-size: 1.5rem;
     margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
+    justify-items: center;
 }
 
 /* Order Detail Container */
@@ -58,29 +58,23 @@ h3 {
 }
 
 /* Styling the Order Status */
-.status {
+.order-status {
     font-weight: bold;
-    text-transform: uppercase;
-    padding: 0.3rem 0.8rem;
-    border-radius: 4px;
-    color: white;
+    color: #28a745;
 }
 
-.status-pending {
-    background-color: #f39c12; /* Yellow for pending */
+.order-status.pending {
+    color: #ffc107;
 }
 
-.status-shipped {
-    background-color: #2ecc71; /* Green for shipped */
+.order-status.shipped {
+    color: #17a2b8;
 }
 
-.status-delivered {
-    background-color: #3498db; /* Blue for delivered */
+.order-status.Returned {
+    color: #dc3545;
 }
 
-.status-cancelled {
-    background-color: #e74c3c; /* Red for cancelled */
-}
 
 /* List of Items */
 ul {
@@ -119,7 +113,7 @@ a.button {
     border-radius: 5px;
     font-weight: bold;
     text-align: center;
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
     transition: background-color 0.3s;
 }
 

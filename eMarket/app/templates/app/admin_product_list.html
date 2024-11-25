@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Approvals</title>
+</head>
+<body>
+  <h2>Pending Products</h2>
+  <form method="post" action="{% url 'admin_product_list' %}">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+        {% for form in formset %}
+            <tr>
+                <!-- use form to access data -->
+                <td>{{ form.id }}</td>
+                <td>{{ form.name.value }}</td>
+                <td>{{ form.price.value }}</td>
+                <td>{{ form.seller.value }}</td>
+                <td>{{ form.pending }}</td>
+            </tr>
+        {% empty %}
+            <p>No pending products to approve.</p>
+        {% endfor %}
+    </table>
+    <button type="submit">Submit</button>
+</form>
+</html>
