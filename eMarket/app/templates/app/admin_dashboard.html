@@ -28,7 +28,7 @@
                 {{ order.user }} bought:
                     {% for product_id, product_details in order.cart_products.items %}
                     <li>
-                        {{ product_details.quantity }} {{ product_details.name }} from {{ order.user }} <br> 
+                        {{ product_details.quantity }} {{ product_details.name }} from {{ product_details.seller }} <br> 
                     </li> 
                     {% endfor %}
                 Status: {{order.status}} <br><br>
