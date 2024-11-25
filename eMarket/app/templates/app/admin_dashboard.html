@@ -18,13 +18,20 @@
             <button type="submit" class="button">Logout</button>
         </form>
         <a href="{% url 'user_list' %}" class="button">View Pending Users</a>
-        <a href="{% url 'product_list' %}" class="button">View Pending Products</a>
+        <a href="{% url 'admin_product_list' %}" class="button">View Pending Products</a>
     </nav>
     <div class="dashboard">
         <h2 class="orders-title">All Orders</h2>
         <ul class="order-list">
             {% for order in orders %}
-                <li class="order-item">{{ order.user.username }} - {{ order.total }} - {{ order.status }}</li>
+                <a href="{% url 'order_detail' order.id %}" class="button">Order #{{ order.user_order_id }} </a> <br>
+                {{ order.user }} bought:
+                    {% for product_id, product_details in order.cart_products.items %}
+                    <li>
+                        {{ product_details.quantity }} {{ product_details.name }} from {{ order.user }} <br> 
+                    </li> 
+                    {% endfor %}
+                Status: {{order.status}} <br><br>
             {% endfor %}
         </ul>
     </div>
