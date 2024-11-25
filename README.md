@@ -1,7 +1,7 @@
 # eMarket-MSU-Intro-to-SE_Group1
 
 ## Description and Objective
-A locally hosted online shopping application built for Intro to Software Engineering at Mississippi State University. This program is designed as a locally hosted example of an e-commerce website.
+A locally hosted online shopping application built for Intro to Software Engineering at Mississippi State University. This program is designed as a non-production example of an e-commerce website.
 
 ## Created By
 - Hudson Hargrove | Newt Tea | Front-End
@@ -30,6 +30,7 @@ A locally hosted online shopping application built for Intro to Software Enginee
 - Agile Development
 
 ## Installation and Setup
+Either visit https://newttea.pythonanywhere.com, or follow the following steps:
 1. Clone the repository:
    ```sh
    git clone https://github.com/Newt-Tea/eMarket-MSU-Intro-to-SE_Group1.git
@@ -47,7 +48,7 @@ A locally hosted online shopping application built for Intro to Software Enginee
     python manage.py runserver
    ```
 ## Usage
-- Open your web browser and navigate to http://localhost:8000 to access the application.
+- Open your web browser and navigate to http://127.0.0.1:8000 to access the application.
 - Create a new account or login with an existing account to explore the features.
 ## Contributing
 This project is a closed contribution project. Contributions are limited to the designated group members. Please refer to the Contributing Guidelines for more details.
