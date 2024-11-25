@@ -401,6 +401,15 @@ def admin_product_list(request):
             print("Formset errors:", formset.errors)
     return render(request, 'app/admin_product_list.html', {'formset': formset, 'products': products})
 
+@login_required
+def user_deletion(request):
+    users = list(User.objects.exclude(user_type='admin'))
+    return render(request, 'app/user_deletion.html', {'users' : users})
+
+
+@login_required
+def user_deletion_confirmation(request):
+    pass
 
 def home(request):
   return render(request, 'app/home.html')
