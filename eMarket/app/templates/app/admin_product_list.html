@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%load static%}
+    <link rel="stylesheet" href="{% static 'app/admin_product_list.css' %}">
     <title>Product Approvals</title>
 </head>
 <body>
+    <header>
+        <h1 class="header-title">Welcome to eMarket</h1>
+    </header>
   <h2>Pending Products</h2>
-  <form method="post" action="{% url 'admin_product_list' %}">
+  <form method="post" action="{% url 'admin_product_list' %}" class="dashboard">
     {% csrf_token %}
     {{ formset.management_form }}
-    <table>
+    <table >
         {% for form in formset %}
             <tr>
                 <!-- use form to access data -->

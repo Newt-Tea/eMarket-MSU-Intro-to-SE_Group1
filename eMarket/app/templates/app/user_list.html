@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%load static%}
+    <link rel="stylesheet" href="{% static 'app/user_list.css' %}">
     <title>User Approvals</title>
 </head>
 <body>
+    <header>
+        <h1 class="header-title">Welcome to eMarket</h1>
+    </header>
   <h2>Pending Users</h2>
-  <form method="post" action="{% url 'user_list' %}">
+  <form method="post" action="{% url 'user_list' %}" class="dashboard">
     {% csrf_token %}
     {{ formset.management_form }}
     <table>
