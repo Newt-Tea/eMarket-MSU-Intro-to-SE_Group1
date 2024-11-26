@@ -177,8 +177,8 @@ def checkout(request):
         form = PaymentForm(request.POST)
         if form.is_valid():
             return redirect('payment_confirmation')
-        else:
-            form = PaymentForm()
+    else:
+        form = PaymentForm()
 
   # for display of total
     cart = Cart.objects.get(user=request.user)
