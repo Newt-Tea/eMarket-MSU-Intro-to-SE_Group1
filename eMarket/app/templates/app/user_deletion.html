@@ -29,7 +29,10 @@
                 <a href="{% url 'user_deletion_confirmation' user.id %}" class="button">Delete</a>
             </td>
         </tr>
+        {% empty %}
+        <tr><td colspan="3">No users found</td></tr>
         {% endfor %}
     </tbody>
+    
 </table>
 </html>

@@ -406,8 +406,8 @@ def user_deletion(request):
     users = []
     all_users = User.objects.all()
     for user in all_users:
-        if user.user_type == 'admin' or user.pending: continue
-        users.append(user)
+        if not (user.user_type == 'admin' or user.pending == True):
+            users.append(user)
     return render(request, 'app/user_deletion.html', {'users' : users})
 
 @login_required
