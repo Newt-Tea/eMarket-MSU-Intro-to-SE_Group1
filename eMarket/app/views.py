@@ -403,7 +403,11 @@ def admin_product_list(request):
 
 @login_required
 def user_deletion(request):
-    users = list(User.objects.exclude(user_type='admin'))
+    users = []
+    all_users = User.objects.all()
+    for user in all_users:
+        if user.user_type == 'admin' or user.pending: continue
+        users.append(user)
     return render(request, 'app/user_deletion.html', {'users' : users})
 
 @login_required
