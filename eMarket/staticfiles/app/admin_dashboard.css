@@ -72,6 +72,8 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 95vw;
+            justify-content: left;
         }
 
         .orders-title {
@@ -124,4 +126,19 @@
             .dashboard-title {
                 font-size: 2rem;
             }
+
+        }
+
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+          }
+        a {
+            text-decoration: none;
         }

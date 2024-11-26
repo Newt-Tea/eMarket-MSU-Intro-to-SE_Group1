@@ -636,6 +636,7 @@ class TestSellerFunctionality(TestCase):
         self.client.login(username='sellerUser', password='sellerPass')
 
     def test_seller_create_product(self):
+        print("\nTest: test_seller_create_product")
         # Test seller creating a product
         response = self.client.post(reverse('create_product'), {
             'name': 'NewProduct',
@@ -648,6 +649,7 @@ class TestSellerFunctionality(TestCase):
         self.assertTrue(product_exists, "Product was not created by the seller.")
 
     def test_seller_update_stock(self):
+        print("\nTest: test_seller_update_stock")
         # Test seller updating product stock
         product = Product.objects.create(name="ExistingProduct", price=50.00, stock=5, seller=self.sellerUser)
         response = self.client.post(reverse('update_stock', args=[product.pk]), {'stock': 20})
@@ -655,6 +657,7 @@ class TestSellerFunctionality(TestCase):
         self.assertEqual(product.stock, 20, "Product stock was not updated correctly.")
 
     def test_seller_remove_product(self):
+        print("\nTest: test_seller_remove_product")
         # Test seller removing a product
         product = Product.objects.create(name="ProductToRemove", price=30.00, stock=5, seller=self.sellerUser)
         response = self.client.post(reverse('remove_product', args=[product.pk]))
@@ -662,12 +665,14 @@ class TestSellerFunctionality(TestCase):
         self.assertFalse(product_exists, "Product was not removed by the seller.")
 
     def test_seller_view_orders(self):
+        print("\nTest: test_seller_view_orders")
         # Test seller viewing their orders
         response = self.client.get(reverse('seller_dashboard'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/seller_dashboard.html')
 
     def test_seller_order_detail(self):
+        print("\nTest: test_seller_order_detail")
         # Test seller viewing order details
         product = Product.objects.create(name="ProductInOrder", price=100.00, stock=5, seller=self.sellerUser)
         cart = Cart.objects.create(user=self.sellerUser)
@@ -676,3 +681,195 @@ class TestSellerFunctionality(TestCase):
         response = self.client.get(reverse('order_detail', args=[order.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/order_detail.html')
+
+class TestUserDeletionSystem(TestCase):
+    def setUp(self):
+        # Create an admin user
+        self.adminUser = get_user_model().objects.create_superuser(
+            username='admin', password='adminPass', user_type='admin'
+        )
+        # Create non-admin users with pending=False
+        self.user1 = get_user_model().objects.create_user(
+            username='user1', password='user1Pass', user_type='buyer', pending=False
+        )
+        self.user2 = get_user_model().objects.create_user(
+            username='user2', password='user2Pass', user_type='seller', pending=False
+        )
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+
+
+    def test_list_non_admin_users(self):
+        print("\nTest: test_list_non_admin_users")
+        response = self.client.get(reverse('user_deletion'))
+        self.assertEqual(response.status_code, 200, "Admin should access the user deletion page.")
+        self.assertContains(response, self.user1.username, msg_prefix="User1 should be listed.")
+        self.assertContains(response, self.user2.username, msg_prefix="User2 should be listed.")
+
+
+    def test_delete_user_confirmation_page(self):
+        print("\nTest: test_delete_user_confirmation_page")
+        # Access the confirmation page for user1
+        response = self.client.get(reverse('user_deletion_confirmation', args=[self.user1.id]))
+        self.assertEqual(response.status_code, 200, "Admin should access the confirmation page for a user.")
+        self.assertContains(response, f"Are you sure you want to delete user \"{self.user1.username}\"?",
+                            msg_prefix="The confirmation page should display the correct user.")
+
+    def test_confirm_delete_user(self):
+        print("\nTest: test_confirm_delete_user")
+        # Confirm deletion of user1
+        response = self.client.post(reverse('user_deletion_confirmation', args=[self.user1.id]), data={'yes': True})
+        self.assertEqual(response.status_code, 302, "After confirming deletion, admin should be redirected.")
+        # Verify that user1 is deleted
+        self.assertFalse(get_user_model().objects.filter(id=self.user1.id).exists(), "User1 should be deleted.")
+
+    def test_cancel_delete_user(self):
+        print("\nTest: test_cancel_delete_user")
+        # Cancel deletion of user2
+        response = self.client.post(reverse('user_deletion_confirmation', args=[self.user2.id]), data={'no': True})
+        self.assertEqual(response.status_code, 302, "After cancelling deletion, admin should be redirected.")
+        # Verify that user2 is not deleted
+        self.assertTrue(get_user_model().objects.filter(id=self.user2.id).exists(), "User2 should not be deleted.")
+
+    def test_admin_can_access_user_deletion(self):
+        print("\nTest: test_admin_can_access_user_deletion")
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+        response = self.client.get(reverse('user_deletion'))
+        self.assertEqual(response.status_code, 200, "Admin should access the user deletion page.")
+        self.assertContains(response, "Manage Users", msg_prefix="The page should display 'Manage Users'.")
+        
+class TestWorkflows(TestCase):
+    def setUp(self):
+        # Create a client, users, and test data
+        self.client = Client()
+        self.buyer = get_user_model().objects.create_user(username='buyer', password='buyerpass', user_type='buyer')
+        self.seller = get_user_model().objects.create_user(username='seller', password='sellerpass', user_type='seller')
+        self.admin = get_user_model().objects.create_superuser(username='admin', password='adminpass', user_type='admin')
+        
+        # Log in as buyer for relevant tests
+        self.client.login(username='buyer', password='buyerpass')
+
+        # Create test products
+        self.product1 = Product.objects.create(name="Phone", price=500.00, stock=10, seller=self.seller)
+        self.product2 = Product.objects.create(name="Tablet", price=300.00, stock=5, seller=self.seller)
+
+    def test_user_registration_and_login(self):
+        print("\nTest: test_user_registration_and_login")
+        # User registers
+        response = self.client.post(reverse('register'), {
+            'user_type': 'buyer',
+            'username': 'newuser',
+            'password1': 'SecurePass123!',
+            'password2': 'SecurePass123!',
+        })
+        self.assertEqual(response.status_code, 302, "User should be redirected after successful registration.")
+        user_exists = get_user_model().objects.filter(username='newuser').exists()
+        self.assertTrue(user_exists, "New user should exist in the database.")
+
+        # New user logs in
+        self.client.logout()
+        login_response = self.client.post(reverse('login'), {'username': 'newuser', 'password': 'SecurePass123!'})
+        self.assertEqual(login_response.status_code, 302, "Login should redirect after successful login.")
+
+    def test_buyer_add_to_cart_and_checkout(self):
+        print("\nTest: test_buyer_add_to_cart_and_checkout")
+        # Buyer adds products to cart
+        cart = Cart.objects.create(user=self.buyer)
+        CartProduct.objects.create(cart=cart, product=self.product1, quantity=2)
+        CartProduct.objects.create(cart=cart, product=self.product2, quantity=1)
+
+        # Checkout
+        response = self.client.post(reverse('checkout'), {'cart_id': cart.id})
+        self.assertEqual(response.status_code, 200, "Response should be successful")
+
+        # Simulate payment confirmation
+        payment_response = self.client.post(reverse('payment_confirmation'))
+        self.assertEqual(payment_response.status_code, 200, "Payment confirmation should succeed")
+
+        # Verify order creation
+        order = Order.objects.filter(user=self.buyer).first()
+        self.assertIsNotNone(order, "Order should be created after payment confirmation.")
+        self.assertEqual(order.total, 1300.00, "Order total should match the sum of product prices in the cart.")
+
+
+    def test_seller_creates_product(self):
+        print("\nTest: test_seller_creates_product")
+        self.client.logout()
+        self.client.login(username='seller', password='sellerpass')
+
+        # Seller creates a product
+        response = self.client.post(reverse('create_product'), {
+            'name': 'Laptop',
+            'price': 1000.00,
+            'stock': 3,
+            'description': 'A high-end laptop.'  # Add the required description field
+        })
+
+        # Check that the product exists in the pending state
+        pending_products = Product.objects.filter(seller=self.seller, pending=True)
+        product = pending_products.filter(name="Laptop").first()
+        self.assertIsNotNone(product, "Product should be created in pending state.")
+
+
+
+        # Simulate admin approving the product
+        self.client.logout()
+        self.client.login(username='admin', password='adminpass')
+        product.pending = False
+        product.save()
+
+        # Check that the product is now approved and listed
+        product.refresh_from_db()
+        self.assertFalse(product.pending, "Product should be approved.")
+        product_exists = Product.objects.filter(name="Laptop", seller=self.seller, pending=False).exists()
+        self.assertTrue(product_exists, "Approved product should exist in the database.")
+
+    def test_admin_approves_user(self):
+        print("\nTest: test_admin_approves_user")
+        pending_user = User.objects.create_user(
+            username="pendinguser", password="password", user_type="buyer", pending=True
+        )
+
+        # Submit form data to approve the user
+        form_data = {
+            "form-TOTAL_FORMS": "1",
+            "form-INITIAL_FORMS": "1",
+            "form-MIN_NUM_FORMS": "0",
+            "form-MAX_NUM_FORMS": "1000",
+            "form-0-id": str(pending_user.id),
+            "form-0-username": "pendinguser",
+            "form-0-user_type": "buyer",
+            "form-0-pending": "False",  # Approve the user
+        }
+        response = self.client.post(reverse("user_list"), form_data)
+
+        self.assertEqual(response.status_code, 302, "Admin should be redirected after approving a user.")
+
+        # Check the user's pending status
+        pending_user.refresh_from_db()
+        self.assertFalse(pending_user.pending, "Pending status should be set to False after approval.")
+
+    def test_buyer_returns_order(self):
+        print("\nTest: test_buyer_returns_order")
+        # Create an order for the buyer
+        cart = Cart.objects.create(user=self.buyer)
+        CartProduct.objects.create(cart=cart, product=self.product1, quantity=1)
+
+        # Manually decrement stock to simulate checkout logic
+        self.product1.stock -= 1
+        self.product1.save()
+
+        order = Order.objects.create(user=self.buyer, cart=cart, total=500.00)
+        order.populate_order_cart_products()
+        order.save()
+
+        # Buyer returns the order
+        response = self.client.post(reverse('order_return', args=[order.id]))
+        self.assertEqual(response.status_code, 302, "Buyer should be redirected after returning the order.")
+
+        # Verify order status and product stock
+        order.refresh_from_db()
+        self.assertEqual(order.status, "Returned", "Order status should be 'Returned' after a return.")
+        self.product1.refresh_from_db()
+        self.assertEqual(self.product1.stock, 10, "Product stock should be updated after the return.")

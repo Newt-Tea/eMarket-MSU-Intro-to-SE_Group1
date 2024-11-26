@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/user_deletion.css' %}">
+    <title>User Deletion</title>
+</head>
+<body>
+  <h1 class="header-title">Manage Users</h1>
+  <nav class="navbar">
+    <a href="{% url 'admin_dashboard' %}" class="button">Back to Admin Dashboard</a>
+  </nav>
+<table class="dashboard">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>User Type</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.user_type }}</td>
+            <td>
+                <a href="{% url 'user_deletion_confirmation' user.id %}" class="button">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No users found</td></tr>
+        {% endfor %}
+    </tbody>
+    
+</table>
+</html>
