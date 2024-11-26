@@ -11,6 +11,9 @@
     <header>
         <h1 class="header-title">Welcome to eMarket</h1>
     </header>
+    <nav class="navbar">
+        <a class="button" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+    </nav>
   <h2>Pending Products</h2>
   <form method="post" action="{% url 'admin_product_list' %}" class="dashboard">
     {% csrf_token %}

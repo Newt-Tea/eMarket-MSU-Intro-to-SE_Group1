@@ -125,3 +125,14 @@ header {
         font-size: 2rem;
     }
 }
+.button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    text-decoration:none;
+}
