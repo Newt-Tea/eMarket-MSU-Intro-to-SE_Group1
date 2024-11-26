@@ -173,50 +173,50 @@ def update_cart_quantity(request, product_id):
 from .forms import PaymentForm
 @login_required
 def checkout(request):
-  if request.method == 'POST':
-    form = PaymentForm(request.POST)
-    if form.is_valid():
-      return redirect('payment_confirmation')
-  else:
-    form = PaymentForm()
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            return redirect('payment_confirmation')
+        else:
+            form = PaymentForm()
 
   # for display of total
     cart = Cart.objects.get(user=request.user)
     cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
     total = 0
     for item in cartProducts:
-      total = total + item.get_total()
-  return render(request, 'app/checkout.html', {'form': form, 'total' : total})
+        total = total + item.get_total()
+    return render(request, 'app/checkout.html', {'form': form, 'total' : total})
 
 # Save total and create an order    
 def cart_checkout(request):
-  cart = Cart.objects.get(user=request.user)
-  cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
-  total = 0
-  quantity = 0
-  deletedProducts = []
-  for item in cartProducts:
-    product = Product.objects.get(pk=item.product.pk)
-    total = total + item.get_total()
-    quantity = quantity + item.quantity
-    product.stock -= item.quantity
-    product.save()
-    if product.stock <= 0: deletedProducts.append(product)
-  Order.objects.create(
-    user = request.user,
-    cart = cart, 
-    total = total, 
-    quantity = quantity,
-    status = 'Confirmed' 
-  )
-  for product in deletedProducts:
-    product.delete()
-  cart.delete()
+    cart = Cart.objects.get(user=request.user)
+    cartProducts = cart.cartProducts.all() # type: ignore # cartProducts is a related_name on the Cart model
+    total = 0
+    quantity = 0
+    deletedProducts = []
+    for item in cartProducts:
+        product = Product.objects.get(pk=item.product.pk)
+        total = total + item.get_total()
+        quantity = quantity + item.quantity
+        product.stock -= item.quantity
+        product.save()
+        if product.stock <= 0: deletedProducts.append(product)
+    Order.objects.create(
+        user = request.user,
+        cart = cart, 
+        total = total, 
+        quantity = quantity,
+        status = 'Confirmed' 
+    )
+    for product in deletedProducts:
+        product.delete()
+    cart.delete()
 
 # Payment Confirmed Page 
 def payment_confirmed(request):
-  cart_checkout(request)
-  return render(request, 'app/payment_confirmed.html')
+    cart_checkout(request)
+    return render(request, 'app/payment_confirmed.html')
 
 ############################################
 ######### END OF CART FUNCTIONS ############
@@ -253,13 +253,14 @@ def update_stock(request, product_id):
         form = UpdateStockForm(instance=product)
     return render(request, 'app/update_stock.html', {'form': form, 'product': product})
 
-@login_required
 def create_product(request):
     if request.method == 'POST':
         form = ProductCreationForm(request.POST, request.FILES)
         if form.is_valid():
+            print("Form is valid.")
             product = form.save(commit=False)
             product.seller = request.user
+            product.pending = True
             product.save()
             return redirect('seller_dashboard')
     else:
@@ -336,37 +337,39 @@ def admin_dashboard(request):
     return render(request, 'app/admin_dashboard.html', {'orders' : orders})
 
 # Account management
-from django.forms import formset_factory
+from django.forms import modelformset_factory, formset_factory
 from .forms import AccountManagementForm
 @login_required
 def user_list(request):
+    """
+    Admin view to approve or deny pending users.
+    """
     users = User.objects.filter(pending=True)
-    AccountManagementFormSet = formset_factory(AccountManagementForm, extra=0)
-    formset = AccountManagementFormSet(initial=[
-        {
-            'id': user.id,
-            'username': user.username, 
-            'user_type': user.user_type, 
-            'pending': True
-        } for user in users
-    ])
-
+    AccountManagementFormSet = modelformset_factory(
+        User,
+        form=AccountManagementForm,
+        extra=0,  # Do not allow extra forms
+        fields=['id', 'username', 'user_type', 'pending'],  # Fields used in the form
+    )
+    
     if request.method == 'POST':
-        formset = AccountManagementFormSet(request.POST)
+        formset = AccountManagementFormSet(request.POST, queryset=users)
         if formset.is_valid():
             for form in formset:
-                user_id = form.cleaned_data['id']
-                user = User.objects.filter(id=user_id).first()
-                option = form.cleaned_data['pending']
-                if option == 'True':
+                user = form.save(commit=False)
+                if form.cleaned_data['pending'] == 'True':  # Deny user
                     user.delete()
-                else:
+                else:  # Approve user
                     user.pending = False
                     user.save()
             return redirect('user_list')
-        if not formset.is_valid():
+        else:
             print("Formset errors:", formset.errors)
+    else:
+        formset = AccountManagementFormSet(queryset=users)
+    
     return render(request, 'app/user_list.html', {'formset': formset, 'users': users})
+
 
 # Product Management
 from .forms import ProductManagementForm
