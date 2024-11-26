@@ -406,10 +406,17 @@ def user_deletion(request):
     users = list(User.objects.exclude(user_type='admin'))
     return render(request, 'app/user_deletion.html', {'users' : users})
 
-
 @login_required
-def user_deletion_confirmation(request):
-    pass
+def user_deletion_confirmation(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        if 'yes' in request.POST:
+            user.delete()
+        return redirect('user_deletion')
+
+    return render(request, 'app/user_deletion_confirmation.html', {'user': user})
+
 
 def home(request):
-  return render(request, 'app/home.html')
+    return render(request, 'app/home.html')

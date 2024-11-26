@@ -676,3 +676,61 @@ class TestSellerFunctionality(TestCase):
         response = self.client.get(reverse('order_detail', args=[order.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/order_detail.html')
+
+class TestUserDeletionSystem(TestCase):
+    def setUp(self):
+        # Create an admin user
+        self.adminUser = get_user_model().objects.create_superuser(
+            username='admin', password='adminPass', user_type='admin'
+        )
+        # Create non-admin users
+        self.user1 = get_user_model().objects.create_user(
+            username='user1', password='user1Pass', user_type='buyer'
+        )
+        self.user2 = get_user_model().objects.create_user(
+            username='user2', password='user2Pass', user_type='seller'
+        )
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+
+    def test_list_non_admin_users(self):
+        print("\nTest: test_list_non_admin_users")
+        # Access the user deletion page
+        response = self.client.get(reverse('user_deletion'))
+        self.assertEqual(response.status_code, 200, "Admin should access the user deletion page.")
+        # Verify that the non-admin users are listed
+        self.assertContains(response, self.user1.username, msg_prefix="User1 should be listed.")
+        self.assertContains(response, self.user2.username, msg_prefix="User2 should be listed.")
+        self.assertNotContains(response, self.adminUser.username, msg_prefix="Admin should not be listed.")
+
+    def test_delete_user_confirmation_page(self):
+        print("\nTest: test_delete_user_confirmation_page")
+        # Access the confirmation page for user1
+        response = self.client.get(reverse('user_deletion_confirmation', args=[self.user1.id]))
+        self.assertEqual(response.status_code, 200, "Admin should access the confirmation page for a user.")
+        self.assertContains(response, f"Are you sure you want to delete user \"{self.user1.username}\"?",
+                            msg_prefix="The confirmation page should display the correct user.")
+
+    def test_confirm_delete_user(self):
+        print("\nTest: test_confirm_delete_user")
+        # Confirm deletion of user1
+        response = self.client.post(reverse('user_deletion_confirmation', args=[self.user1.id]), data={'yes': True})
+        self.assertEqual(response.status_code, 302, "After confirming deletion, admin should be redirected.")
+        # Verify that user1 is deleted
+        self.assertFalse(get_user_model().objects.filter(id=self.user1.id).exists(), "User1 should be deleted.")
+
+    def test_cancel_delete_user(self):
+        print("\nTest: test_cancel_delete_user")
+        # Cancel deletion of user2
+        response = self.client.post(reverse('user_deletion_confirmation', args=[self.user2.id]), data={'no': True})
+        self.assertEqual(response.status_code, 302, "After cancelling deletion, admin should be redirected.")
+        # Verify that user2 is not deleted
+        self.assertTrue(get_user_model().objects.filter(id=self.user2.id).exists(), "User2 should not be deleted.")
+
+    def test_admin_can_access_user_deletion(self):
+        print("\nTest: test_admin_can_access_user_deletion")
+        # Log in as admin
+        self.client.login(username='admin', password='adminPass')
+        response = self.client.get(reverse('user_deletion'))
+        self.assertEqual(response.status_code, 200, "Admin should access the user deletion page.")
+        self.assertContains(response, "Manage Users", msg_prefix="The page should display 'Manage Users'.")

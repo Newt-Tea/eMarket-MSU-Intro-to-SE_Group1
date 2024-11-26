@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Deletion Confirmation</title>
+</head>
+<body>
+  <h1>Confirm Deletion</h1>
+<p>Are you sure you want to delete user "{{ user.username }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="yes">Yes</button>
+    <button type="submit" name="no">No</button>
+</form>
+<a href="{% url 'admin_dashboard' %}" class="btn btn-link">Back to Admin Dashboard</a>
+</body>
+</html>
