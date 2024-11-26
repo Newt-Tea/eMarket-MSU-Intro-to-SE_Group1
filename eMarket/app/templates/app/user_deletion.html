@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/user_deletion.css' %}">
     <title>User Deletion</title>
 </head>
 <body>
-  <h1>Manage Users</h1>
-  <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Back to Admin Dashboard</a>
-<table>
+  <h1 class="header-title">Manage Users</h1>
+  <nav class="navbar">
+    <a href="{% url 'admin_dashboard' %}" class="button">Back to Admin Dashboard</a>
+  </nav>
+<table class="dashboard">
     <thead>
         <tr>
             <th>Username</th>
@@ -22,7 +26,7 @@
             <td>{{ user.username }}</td>
             <td>{{ user.user_type }}</td>
             <td>
-                <a href="{% url 'user_deletion_confirmation' user.id %}">Delete</a>
+                <a href="{% url 'user_deletion_confirmation' user.id %}" class="button">Delete</a>
             </td>
         </tr>
         {% endfor %}

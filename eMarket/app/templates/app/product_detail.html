@@ -29,7 +29,16 @@
         </div>
     </main>
     <footer>
-        <a href="{% url 'product_list' %}" class="button">Back to Product List</a>
+        {% if user.is_authenticated %}
+            {% if request.user.user_type == "admin" %}
+                <a href="javascript:history.back()" class="button">Back to Order Detail</a>
+                
+            {% else %}
+                <a href="{% url 'product_list' %}" class="button">Back to Product List</a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'login' %}" class="button">Login</a>
+        {% endif %}
     </footer>
 </body>
 </html>

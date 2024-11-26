@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/user_deletion_confirmation.css' %}">
     <title>User Deletion Confirmation</title>
 </head>
 <body>
@@ -10,8 +12,8 @@
 <p>Are you sure you want to delete user "{{ user.username }}"?</p>
 <form method="post">
     {% csrf_token %}
-    <button type="submit" name="yes">Yes</button>
-    <button type="submit" name="no">No</button>
+    <button type="submit" name="yes" class="button">Yes</button>
+    <button type="submit" name="no" class="button">No</button>
 </form>
 </body>
 </html>

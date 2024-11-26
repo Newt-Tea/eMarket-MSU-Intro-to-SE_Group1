@@ -26,13 +26,13 @@
         <ul class="order-list">
             {% for order in orders %}
                 <a href="{% url 'order_detail' order.id %}" class="button">Order #{{ order.user_order_id }} </a> <br>
-                {{ order.user }} bought:
+                <li class="order-item">
+                    {{ order.user }} Bought:
                     {% for product_id, product_details in order.cart_products.items %}
-                    <li>
                         {{ product_details.quantity }} {{ product_details.name }} from {{ product_details.seller }} <br> 
-                    </li> 
+                
                     {% endfor %}
-                Status: {{order.status}} <br><br>
+                    Status: {{order.status}}</li>
             {% endfor %}
         </ul>
     </div>
