@@ -7,7 +7,7 @@ A locally hosted online shopping application built for Intro to Software Enginee
 - Hudson Hargrove | Newt Tea | Front-End
 - Jeremiah Ickom | ji256 | Database Integration -> Stylesheets
 - Andrea Ambrose | aambrose1 | Back-End
-- Matthew Crosno | LostSpaghetti | Back-End -> Database Integration
+- Matthew Crosno | mccrosno | Back-End -> Database Integration
 
 ## Features
 - **Account Management**:
